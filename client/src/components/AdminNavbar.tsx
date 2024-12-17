@@ -61,7 +61,7 @@ export const AdminNavbar = () => {
               Add Machine{" "}
             </Link>
             <Link
-              href="/my-account"
+              href="/Assign"
               className="text-gray-300 hover:text-[#21eb00]"
             >
               Sign Machine{" "}

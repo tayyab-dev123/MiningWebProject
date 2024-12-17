@@ -149,7 +149,7 @@ export default function LoginPage() {
             in the fields below, and we'll get a new account set up for you in no time. We will
             only ask you for information necessary to make the purchase process faster and easier.
           </p>
-          <Link href="auth/signup">
+          <Link href="/auth/signup">
             <button className="bg-white text-black py-2 px-4 rounded hover:bg-gray-200 transition-colors mx-auto w-30">
               REGISTER
             </button>
