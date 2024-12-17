@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { useGetAllMiningMachinesQuery, useDeleteMiningMachineMutation } from "@/lib/feature/Machines/miningMachinesApiSlice";
 import { Pencil, Trash2, Eye, Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { DeleteConfirmationModal } from './DeleteModal';
 
 interface MiningMachine {
   _id: string;
@@ -15,6 +15,7 @@ interface MiningMachine {
   priceRange: string;
   coinsMined: string;
   monthlyProfit: string;
+  ProfitAdmin: string;
   images: string[];
   createdAt: string;
 }
@@ -29,42 +30,7 @@ interface DeleteConfirmationModalProps {
   isLoading?: boolean;
 }
 
-const DeleteConfirmationModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  title,
-  description,
-  isLoading = false
-}: DeleteConfirmationModalProps) => {
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-800 text-white border border-gray-700">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="text-gray-400">
-            {description}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={isLoading}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Deleting...' : 'Delete'}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
+
 
 // Main AdminProductTable Component
 const AdminProductTable = () => {
@@ -140,7 +106,7 @@ const AdminProductTable = () => {
             Mining Machines Management
           </h1>
           <Link 
-            href="/admin/add-product" 
+            href="/ProductUpload" 
             className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
           >
             <Plus className="h-5 w-5" />
@@ -167,21 +133,23 @@ const AdminProductTable = () => {
 
         {/* Table */}
         <div className="overflow-x-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700">
-          <table className="min-w-full divide-y divide-gray-700">
-            <thead>
-              <tr className="bg-gray-750">
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Image</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Machine Name</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Hashrate</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Price Range</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Coins Mined</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+          <table className="mining-machines-table w-full text-left text-sm">
+            <thead className="bg-gray-800">
+              <tr>
+                <th className="px-6 py-4 text-gray-300">Image</th>
+                <th className="px-6 py-4 text-gray-300">Machine Name</th>
+                <th className="px-6 py-4 text-gray-300">Hashrate</th>
+                <th className="px-6 py-4 text-gray-300">Price Range</th>
+                <th className="px-6 py-4 text-gray-300">Coins Mined</th>
+                <th className="px-6 py-4 text-gray-300">Monthly Profit</th>
+                <th className="px-6 py-4 text-gray-300">Profit Admin</th>
+                <th className="px-6 py-4 text-gray-300">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
               {currentMachines.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
                     No mining machines found
                   </td>
                 </tr>
@@ -215,19 +183,13 @@ const AdminProductTable = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-green-400">${machine.monthlyProfit}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-green-400">${machine.ProfitAdmin}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex gap-3">
-                        <Link
-                          href={`/admin/view-product/${machine._id}`}
-                          className="p-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500/20 transition-colors"
-                        >
-                          <Eye className="h-5 w-5" />
-                        </Link>
-                        <Link
-                          href={`/admin/edit-product/${machine._id}`}
-                          className="p-2 bg-yellow-500/10 text-yellow-400 rounded-lg hover:bg-yellow-500/20 transition-colors"
-                        >
-                          <Pencil className="h-5 w-5" />
-                        </Link>
                         <button
                           onClick={() => handleDeleteClick(machine._id)}
                           className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
@@ -281,15 +243,7 @@ const AdminProductTable = () => {
           </div>
         )}
 
-        {/* Delete Confirmation Modal */}
-        <DeleteConfirmationModal
-          isOpen={deleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          onConfirm={handleDelete}
-          title="Delete Mining Machine"
-          description="Are you sure you want to delete this mining machine? This action cannot be undone."
-          isLoading={isDeleting}
-        />
+     
       </div>
     </div>
   );

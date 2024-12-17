@@ -15,7 +15,7 @@ const miningMachineSchema = new mongoose.Schema({
     required: [true, 'Power consumption is required']
   },
   priceRange: {
-    type: Number,
+    type: String,
     required: [true, 'Price range is required']
   },
   coinsMined: {
@@ -23,15 +23,19 @@ const miningMachineSchema = new mongoose.Schema({
     required: [true, 'Coins mined information is required']
   },
   monthlyProfit: {
-    type: Number,
+    type: String,
     required: [true, 'Monthly profit estimation is required']
+  },
+  ProfitAdmin: {
+    type: Number,
+    required: [true, 'Monthly profit is required']
   },
   description: {
     type: String,
     required: [true, 'Description is required']
   },
   images: [{
-    type: String  // Array of Cloudinary URLs
+    type: String  
   }],
   createdAt: {
     type: Date,

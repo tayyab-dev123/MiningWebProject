@@ -6,6 +6,8 @@ import { RootState } from "@/lib/store/store";
 import { logout, setUser } from "@/lib/feature/auth/authSlice";
 import { router } from "next/navigation";
 import { useGetCurrentUserQuery } from "@/lib/feature/auth/authThunk";
+import { usePathname } from "next/navigation";
+
 
 interface NavLink {
   label: string;
@@ -23,6 +25,7 @@ const NavBar = () => {
   );
   const { isLoading } = useGetCurrentUserQuery();
   const dispatch = useDispatch();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     try {
@@ -49,15 +52,10 @@ const NavBar = () => {
     { label: "HOME", href: "/" },
     { label: "SHOP", href: "/shop" },
     { label: "ABOUT US", href: "/about" },
-    { label: "CONTACT US", href: "/contact" },
+    { label: "CONTACT US", href: "/contactUs" },
   ];
 
-  // const userMenuItems = [
-  //   { label: "Profile", href: "/profile" },
-  //   { label: "Orders", href: "/orders" },
-  //   { label: "Settings", href: "/settings" },
-  //   { label: "Logout", href: "/logout" },
-  // ];
+
 
   return (
     <header className="bg-[#101010] text-white">
@@ -72,13 +70,31 @@ const NavBar = () => {
               </div>
               <span className="text-lg font-bold">wemine</span>
             </Link>
-
+            <div className="relative">
+              <div className="flex items-center space-x-6">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={`relative pb-2 text-white transition-colors 
+                      ${pathname === link.href 
+                        ? 'text-green-500 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-green-500' 
+                        : 'hover:text-green-500'
+                      }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+              {/* Bottom Line */}
+              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gray-700"></div>
+            </div>
             {/* Main Navigation */}
             <div className="flex items-center space-x-6">
               {isLoading ? (
                 <div className="h-6 w-24 animate-pulse rounded bg-gray-700"></div>
               ) : isAuthenticated ? (
-                <div className="group relative">
+                <div className="group relative z-50">
                   <button className="flex items-center space-x-2 transition-colors hover:text-green-500">
                     <User className="h-5 w-5" />
                     <span>{user?.firstName || "My Account"}</span>

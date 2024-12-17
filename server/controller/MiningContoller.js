@@ -1,6 +1,6 @@
-import MiningMachine from '../model/MiningMachine.js';
+import MiningMachine from "../model/MiningMachine.js";
 import uploadToCloudinary from "../helper/cloudinary.js";
-import { StatusCodes } from 'http-status-codes';
+import { StatusCodes } from "http-status-codes";
 
 export const createMiningMachine = async (req, res) => {
   try {
@@ -11,7 +11,8 @@ export const createMiningMachine = async (req, res) => {
       priceRange,
       coinsMined,
       monthlyProfit,
-      description
+      description,
+      ProfitAdmin,
     } = req.body;
 
     const imageUrls = [];
@@ -30,36 +31,36 @@ export const createMiningMachine = async (req, res) => {
       coinsMined,
       monthlyProfit,
       description,
-      images: imageUrls
+      ProfitAdmin,
+      images: imageUrls,
     });
 
     res.status(StatusCodes.CREATED).json({
       success: true,
-      data: miningMachine
+      data: miningMachine,
     });
   } catch (error) {
-    console.error('Error creating mining machine:', error);
+    console.error("Error creating mining machine:", error);
     res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
 
 export const getAllMiningMachines = async (req, res) => {
   try {
-    const miningMachines = await MiningMachine.find()
-      .sort('-createdAt');
+    const miningMachines = await MiningMachine.find().sort("-createdAt");
 
     res.status(StatusCodes.OK).json({
       success: true,
       count: miningMachines.length,
-      data: miningMachines
+      data: miningMachines,
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -67,22 +68,22 @@ export const getAllMiningMachines = async (req, res) => {
 export const getMiningMachineById = async (req, res) => {
   try {
     const miningMachine = await MiningMachine.findById(req.params.id);
-    
+
     if (!miningMachine) {
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
-        message: 'Mining machine not found'
+        message: "Mining machine not found",
       });
     }
 
     res.status(StatusCodes.OK).json({
       success: true,
-      data: miningMachine
+      data: miningMachine,
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -90,11 +91,11 @@ export const getMiningMachineById = async (req, res) => {
 export const updateMiningMachine = async (req, res) => {
   try {
     let miningMachine = await MiningMachine.findById(req.params.id);
-    
+
     if (!miningMachine) {
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
-        message: 'Mining machine not found'
+        message: "Mining machine not found",
       });
     }
 
@@ -113,18 +114,18 @@ export const updateMiningMachine = async (req, res) => {
       req.body,
       {
         new: true,
-        runValidators: true
+        runValidators: true,
       }
     );
 
     res.status(StatusCodes.OK).json({
       success: true,
-      data: miningMachine
+      data: miningMachine,
     });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -132,11 +133,11 @@ export const updateMiningMachine = async (req, res) => {
 export const deleteMiningMachine = async (req, res) => {
   try {
     const miningMachine = await MiningMachine.findById(req.params.id);
-    
+
     if (!miningMachine) {
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
-        message: 'Mining machine not found'
+        message: "Mining machine not found",
       });
     }
 
@@ -144,12 +145,12 @@ export const deleteMiningMachine = async (req, res) => {
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: 'Mining machine deleted successfully'
+      message: "Mining machine deleted successfully",
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };

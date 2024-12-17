@@ -1,83 +1,57 @@
-import { apiSlice } from '@/lib/store/apiSlice';
-import { User } from '@/types/authTypes';
-import { setUser } from './authSlice';
-interface RegisterRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
+import { baseApiSlice } from '../../store/apiSlice';
+import { AuthResponse, LoginCredentials, RegisterCredentials, User } from '../../../types/user';
 
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface AuthResponse {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
-export const authApiSlice = apiSlice.injectEndpoints({
+export const authApiSlice = baseApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    register: builder.mutation<AuthResponse, RegisterRequest>({
+    register: builder.mutation<AuthResponse, RegisterCredentials>({
       query: (credentials) => ({
-        url: '/api/v1/register',
+        url: 'api/v1/register',
         method: 'POST',
         body: credentials,
-        credentials: 'include',
       }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setUser(data));
-        } catch {
-          dispatch(setUser(null));
-        }
-      }
+      invalidatesTags: ['User'],
     }),
-    login: builder.mutation<AuthResponse, LoginRequest>({
+
+    login: builder.mutation<AuthResponse, LoginCredentials>({
       query: (credentials) => ({
-        url: '/api/v1/login',
+        url: 'api/v1/login',
         method: 'POST',
         body: credentials,
-        credentials: 'include',
       }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setUser(data));
-        } catch {
-          dispatch(setUser(null));
-        }
-      }
+      invalidatesTags: ['User'],
     }),
-    logout: builder.mutation<void, void>({
+
+    logout: builder.mutation<{ message: string }, void>({
       query: () => ({
-        url: '/api/v1/logout',
-        method: 'POST',
-        credentials: 'include',
+        url: 'api/v1/logoutUser',
+        method: 'GET',
       }),
-      async onQueryStarted(_, { dispatch }) {
-        dispatch(setUser(null));
-      }
+      invalidatesTags: ['User'],
     }),
+
     getCurrentUser: builder.query<User, void>({
       query: () => ({
-        url: '/api/v1/me',
+        url: 'api/v1/profile',
         method: 'GET',
-        credentials: 'include',
       }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setUser(data));
-        } catch {
-          dispatch(setUser(null));
-        }
-      }
+      providesTags: ['User'],
+    }),
+
+    updateProfile: builder.mutation<User, Partial<User>>({
+      query: (updates) => ({
+        url: 'api/v1/updateProfile',
+        method: 'PATCH',
+        body: updates,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    verifyPassword: builder.mutation<{ message: string }, { password: string }>({
+      query: (data) => ({
+        url: 'api/v1/verify-password',
+        method: 'POST',
+        body: data,
+      }),
     }),
   }),
 });
@@ -87,4 +61,6 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useGetCurrentUserQuery,
+  useUpdateProfileMutation,
+  useVerifyPasswordMutation,
 } = authApiSlice;

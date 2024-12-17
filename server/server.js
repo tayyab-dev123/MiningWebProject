@@ -4,6 +4,7 @@ import cors from "cors";
 import connect from "./config.js";
 import cookieParser from "cookie-parser";
 import fs from 'node:fs'
+import { setupAutoProfitUpdates } from "./cronJobs.js";
 
 dotenv.config();
 const app = express();
@@ -40,6 +41,7 @@ app.use(cookieParser());
 const server = async () => {
   try {
         await connect()
+        setupAutoProfitUpdates()
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });

@@ -111,6 +111,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
+    role: user.role, 
   });
 });
 
@@ -152,7 +153,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      // Add any other fields you want to return
+      role:user.role,
     });
   } catch (error) {
     console.error("Get current user error:", error);
@@ -182,7 +183,8 @@ export const profile = asyncHandler(async (req, res) => {
   res.status(200).json({
     name: user.name,
     email: user.email,
-    bio: user.bio || "", // Default to an empty string if bio is undefined
+    role: user.role,
+
   });
 });
 

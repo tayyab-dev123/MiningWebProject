@@ -13,9 +13,9 @@ route.get("/me", protect, getCurrentUser); // Add this new route
 
 
 
-route.delete("/admin/users/:id", protect, adminMiddleware, deleteUser);
+route.get("/admin/users", protect, adminMiddleware, getAllUsers);
 
-route.get("/admin/users", protect, creatorMiddleware, getAllUsers);
+route.delete("/admin/users/:id", protect, adminMiddleware, deleteUser);
 
 
 export default route;

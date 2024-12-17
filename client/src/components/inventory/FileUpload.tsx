@@ -15,6 +15,7 @@ const ProductUpload = () => {
     priceRange: "",
     coinsMined: "",
     monthlyProfit: "",
+    ProfitAdmin:"",
     description: "",
   });
   const [images, setImages] = useState<File[]>([]);
@@ -28,6 +29,7 @@ const ProductUpload = () => {
       priceRange: "",
       coinsMined: "",
       monthlyProfit: "",
+      ProfitAdmin:"",
       description: "",
     });
     setImages([]);
@@ -49,12 +51,6 @@ const ProductUpload = () => {
     // Validate numeric fields
     if (isNaN(Number(formData.powerConsumption)) || Number(formData.powerConsumption) <= 0) {
       throw new Error('Power consumption must be a positive number');
-    }
-    if (isNaN(Number(formData.priceRange)) || Number(formData.priceRange) <= 0) {
-      throw new Error('Price range must be a positive number');
-    }
-    if (formData.monthlyProfit && (isNaN(Number(formData.monthlyProfit)) || Number(formData.monthlyProfit) < 0)) {
-      throw new Error('Monthly profit must be a non-negative number');
     }
   };
 
@@ -196,7 +192,7 @@ const ProductUpload = () => {
               </label>
               <input
                 className="w-full rounded-lg border border-gray-700 bg-gray-800 p-3 text-white"
-                type="number"
+                type="text"
                 name="priceRange"
                 value={formData.priceRange}
                 onChange={handleInputChange}
@@ -204,6 +200,7 @@ const ProductUpload = () => {
                 required
               />
             </div>
+            
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -226,7 +223,7 @@ const ProductUpload = () => {
               </label>
               <input
                 className="w-full rounded-lg border border-gray-700 bg-gray-800 p-3 text-white"
-                type="number"
+                type="text"
                 name="monthlyProfit"
                 value={formData.monthlyProfit}
                 onChange={handleInputChange}
@@ -234,7 +231,19 @@ const ProductUpload = () => {
               />
             </div>
           </div>
-
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-gray-300">
+              Profit Per month
+            </label>
+            <input
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 p-3 text-white"
+              name="ProfitAdmin"
+              value={formData.ProfitAdmin}
+              onChange={handleInputChange}
+              placeholder="Enter machine description..."
+              type="number"
+            />
+          </div>
           <div>
             <label className="mb-2 block text-sm font-semibold text-gray-300">
               Description

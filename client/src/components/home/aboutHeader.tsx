@@ -1,64 +1,62 @@
-/* eslint-disable react/no-unescaped-entities */
 import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 
-const TradifierHero = () => {
+const HeroSection = () => {
   return (
-    <div className="relative bg-[#fff]">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(30deg,transparent_70%,rgba(251,146,60,0.1))]" />
-        
-        {/* Circuit-like pattern */}
-        <div className="absolute right-0 top-0 h-full w-1/2 opacity-10">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute h-px w-24 bg-orange-500"
-              style={{
-                top: `${20 + i * 15}%`,
-                right: `${30 + (i % 3) * 20}%`,
-                transform: `rotate(${45 + (i * 15)}deg)`
-              }}
-            />
-          ))}
+    <div className="relative min-h-screen  mx-8">
+      {/* Main container */}
+      <div className="container mx-auto px-4 py-16 flex flex-col md:flex-row items-center justify-between">
+        {/* Left side with image */}
+        <div className="w-full md:w-1/2 relative">
+          <div className="relative w-full h-[500px]">
+            {/* Green glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 to-transparent rounded-full filter blur-3xl"></div>
+            {/* Bitcoin image container */}
+            <div className="relative h-full w-full rounded-2xl overflow-hidden">
+              <Image
+                src="/about.png"
+                alt="Bitcoin in cave"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-2xl"
+                priority
+              />
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="py-20 lg:py-24">
-          <div className="flex flex-col items-center justify-center text-center">
-            {/* Pre-heading badge - Centered */}
-            <div className="mb-8 inline-flex items-center space-x-2 rounded-full bg-primary px-4 py-2">
-              <div className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
-              <span className="text-sm font-medium text-white">Revolutionizing Asset Trading</span>
-            </div>
-            <h1 className="relative z-10 max-w-7xl text-3xl font-medium tracking-tight text-black sm:text-xl lg:text-5xl md:mx-48  text-center">
-              <span className="block md:leading-[1.2]">Building Tomorrow's World One Trade at a Time
-              </span>
-              <span className="mt-2 block bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
-              </span>
+        {/* Right side with content */}
+        <div className="w-full md:w-1/2 mt-8 md:mt-0 md:pl-12  py-4">
+          <div className="space-y-6">
+            <h2 className="text-green-500 font-medium">Welcome to WeMine</h2>
+            <h1 className="text-4xl md:text-3xl font-bold text-white leading-tight">
+              Your Gateway to Crypto Mining Success
             </h1>
-            {/* Mission statement - Centered */}
-            <div className="mt-8 max-w-5xl text-center">
-              <p className="text-xl leading-relaxed text-gray-600">
-                At Tradifier, we believe in simplifying how businesses in the solar and IT industries trade. 
-                As a global platform, we've created a streamlined eco-system for buying, selling, and recycling assets.
-              </p>
-              <p className="mt-4 text-xl leading-relaxed text-gray-600">
-                Whether you're a solar installer looking for surplus panels or an IT professional needing to dispose of 
-                outdated hardware, Tradifier offers a reliable and efficient solution.
+            <p className="text-gray-300 ">
+              Whether you're a seasoned miner or a beginner venturing into crypto mining, 
+              we are your trusted partner. Based in Dubai, we cater to the needs of crypto 
+              miners in the region and beyond. Our mission is to make cryptocurrency mining 
+              accessible to all, including beginners looking to explore this exciting field.
+            </p>
+            <p className="text-gray-300 text-lg">
+              At WeMine, we specialize in providing cutting-edge crypto mining machines 
+              and accessories to unlock the full potential of cryptocurrency mining.
+            </p>
+            <div className="pt-4">
+              <p className="text-gray-300 text-lg">
+                Embark on your <span className="text-white font-semibold">crypto miners UAE</span> journey 
+                with confidence, guided by our expertise and top-of-the-line equipment designed 
+                for optimal performance and success.
               </p>
             </div>
 
-            <div className="mt-8">
-        <button className="px-12 py-4 bg-secondary hover:bg-primary text-white text-lg font-medium rounded-full  transition duration-300">
-          Free Sign Up
-        </button>
-      </div>          </div>
+         
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default TradifierHero;
+export default HeroSection;

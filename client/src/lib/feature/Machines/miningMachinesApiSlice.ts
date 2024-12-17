@@ -1,3 +1,4 @@
+import { Machine } from '@/types/machine';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const miningMachinesApiSlice = createApi({
@@ -5,7 +6,7 @@ export const miningMachinesApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/api/v1' }), // Adjust your base URL accordingly
   tagTypes: ['MiningMachine'],
   endpoints: (builder) => ({
-    getAllMiningMachines: builder.query({
+    getAllMiningMachines: builder.query<Machine[], void>({
       query: () => '/mining-machines',
       providesTags: ['MiningMachine'],
     }),

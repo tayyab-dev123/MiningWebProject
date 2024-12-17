@@ -1,15 +1,14 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client"
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useLoginMutation } from "@/lib/feature/auth/authThunk";
 import { useDispatch } from "react-redux";
-import { setUser } from "@/lib/feature/auth/authSlice";
+import { setCredentials } from "@/lib/feature/auth/authSlice"; // Remove setUser import
 import 'react-toastify/dist/ReactToastify.css';
-
+import { store } from "@/lib/store/store";
 
 interface LoginError {
   status?: number;
@@ -30,10 +29,24 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const userData = await login({ email, password }).unwrap();
-      dispatch(setUser(userData)); // Update Redux state
+      console.log('Login response:', userData);
+      
+      // Make sure we dispatch the complete user data
+      dispatch(setCredentials(userData));
+      
+      console.log('Dispatched to Redux:', userData);
+      
       toast.success("Login successful!");
-      router.push("/");
+      
+      // Add a small delay and check auth state before navigation
+      setTimeout(() => {
+        const authState = store.getState().auth;
+        console.log('Auth State before navigation:', authState);
+        router.push("/");
+      }, 100);
+      
     } catch (error) {
+      console.error('Login error:', error);
       const err = error as LoginError;
       if (err?.status === 404) {
         toast.error("User not found, please sign up.");
@@ -44,7 +57,6 @@ export default function LoginPage() {
       }
     }
   };
-
   return (
     <div className="min-h-screen bg-primary text-white p-8">
       <ToastContainer />
@@ -68,7 +80,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block mb-2">
-                Username or email address
+               email address
                 <span className="text-red-500 ml-1">*</span>
               </label>
               <input

@@ -3,6 +3,7 @@ import HeroSection from "./HeroSection";
 import ServicesSection from "./Service";
 import SolutionCard from "../SolarSolutions";
 import ModernAboutSegments from "./Segments";
+import Shop from "../shop/Product";
 
 function LandingHome() {
   return (
@@ -10,6 +11,8 @@ function LandingHome() {
       <HeroSection />
       <SolutionCard/>
       <ModernAboutSegments/>
+      <Shop  isHomePage={true}/>
+      
     </div>
   );
 }

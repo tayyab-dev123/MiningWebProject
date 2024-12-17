@@ -27,6 +27,7 @@
     "multer": "^1.4.5-lts.1",
     "new": "file:..",
     "new-folder-(2)": "file:..",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
     "nodemon": "^3.1.4"
   }

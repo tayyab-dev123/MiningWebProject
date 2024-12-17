@@ -3,6 +3,7 @@ import React, { useState, ReactNode } from "react";
 import Header from "@/components/Header";
 import Navbar from "../NavBar";
 import Footer from "@/components/home/Footer";
+import { AdminNavbar } from "../AdminNavbar";
 
 export default function LandingLayout({
   children,
@@ -13,9 +14,11 @@ export default function LandingLayout({
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div >
-     
+      <div className="bg-black-2" >
+      <AdminNavbar/>
+
        <Navbar/>
+
         <div >
          
           <main>
