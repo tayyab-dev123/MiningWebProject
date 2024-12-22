@@ -59,7 +59,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-primary p-8 text-white flex flex-col">
       <ToastContainer />
       {/* Header */}
-      <div className="mx-auto mb-16 max-w-xl items-center justify-center text-center">
+      <div className="mx-auto mb-16 max-w-3xl items-center justify-center text-center">
         <h1 className="text-[68px] font-medium">Create account</h1>
         <div className="-mt-2 text-sm text-white">
           <Link href="/" className="hover:text-green-500">
@@ -71,7 +71,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Register Container */}
-      <div className="mx-auto w-full max-w-md space-y-6">
+      <div className="mx-auto w-full max-w-xl space-y-6">
         {/* Register Form */}
         <div className="bg-gray-800 rounded-lg p-8 shadow-xl border border-gray-700">
           <h2 className="mb-6 text-2xl font-bold text-center">REGISTER</h2>

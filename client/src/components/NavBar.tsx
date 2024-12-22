@@ -23,6 +23,7 @@ const NavBar = () => {
     "Auth State:",
     useSelector((state: RootState) => state.auth),
   );
+  
   const { isLoading } = useGetCurrentUserQuery();
   const dispatch = useDispatch();
   const pathname = usePathname();
@@ -39,8 +40,7 @@ const NavBar = () => {
 
   const userMenuItems: NavLink[] = [
     { label: "Profile", href: "/profile" },
-    { label: "Orders", href: "/orders" },
-    { label: "Settings", href: "/settings" },
+ 
     {
       label: "Logout",
       href: "#",
@@ -122,7 +122,6 @@ const NavBar = () => {
               )}
               <div className="flex items-center space-x-4">
                 <IconWithBadge Icon={Heart} count={0} />
-                <IconWithBadge Icon={RepeatIcon} count={0} />
                 <IconWithBadge Icon={ShoppingCart} count={0} />
               </div>
             </div>
@@ -188,12 +187,7 @@ const NavBar = () => {
                 >
                   WISHLIST
                 </a>
-                <a
-                  href="#"
-                  className="py-2 transition-colors hover:text-green-500"
-                >
-                  COMPARE
-                </a>
+               
                 <a
                   href="#"
                   className="py-2 transition-colors hover:text-green-500"

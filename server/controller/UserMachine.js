@@ -78,24 +78,37 @@ export const assignMachineToUser = async (req, res) => {
 
 export const getUserMachines = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userIdentifier = req.params.userId;
 
-    // Validate userId
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
+    if (!userIdentifier) {
+      return res.status(400).json({ message: 'User identifier is required' });
     }
 
-    // Find all machines assigned to the user with populated details
-    const userMachines = await UserMachine.find({ user: userId })
+    let user;
+    // Check if the identifier is a valid MongoDB ObjectId
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(userIdentifier);
+
+    if (isValidObjectId) {
+      user = await User.findById(userIdentifier);
+    } else {
+      // If not a valid ObjectId, search by email
+      user = await User.findOne({ email: userIdentifier });
+    }
+
+    if (!user) {
+      return res.status(404).json({ 
+        message: 'User not found',
+        identifier: userIdentifier 
+      });
+    }
+
+    // Now that we have the user, find their machines using the _id
+    const userMachines = await UserMachine.find({ user: user._id })
       .populate('user', 'firstName lastName email')
       .populate('machine', 'machineName model');
 
-    // Check if any machines are assigned
     if (userMachines.length === 0) {
-      return res.status(404).json({ 
-        message: 'No machines found for this user',
-        userId 
-      });
+      return res.status(200).json([]); // Return empty array instead of 404
     }
 
     res.status(200).json(userMachines);

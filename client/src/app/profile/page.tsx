@@ -1,7 +1,8 @@
-import AdminProductTable from '@/components/AllProduct/ProductTable'
-import ProductUpload from '@/components/inventory/FileUpload'
-import DefaultLayout from '@/components/Layouts/DefaultLayout'
+
 import LandingLayout from '@/components/Layouts/LandingLayout'
+import AssigMachineUser from '@/components/myAccount/assignProfile'
+import DashboardHero from '@/components/myAccount/Hero'
+import DashboardLayout from '@/components/myAccount/layout'
 import AccountDashboard from '@/components/myAccount/layout'
 import React from 'react'
 
@@ -9,7 +10,9 @@ function page() {
   return (
     <div>
       <LandingLayout>
-        <AccountDashboard/>
+        <DashboardLayout>
+          <DashboardHero/>
+        </DashboardLayout>
       </LandingLayout>
     </div>
   )

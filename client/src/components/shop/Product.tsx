@@ -6,17 +6,24 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 
 const Shop = ({
-  isHomePage = false, 
+  isHomePage = false,
   initialProductCount = 6,
+  whatsappNumber = "+1234567890", // Add your WhatsApp number here
 }) => {
   const [sortOption, setSortOption] = useState("featured");
   const { data: products, isLoading, isError } = useGetAllMiningMachinesQuery();
 
-  // Filter top products (for example, by rating or newest)
   const topProducts = products?.data?.slice(0, 3) || [];
 
+  const handleWhatsAppClick = (product) => {
+    const message = `Hi, I'm interested in buying the ${product.machineName}.\n\nDetails:\n- Hashrate: ${product.hashrate} TH/s\n- Price: $${product.priceRange}\n\nPlease provide more information.`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const TopProductCard = ({ product }) => {
-    if (isHomePage) return null; // Hide top products on home page
+    if (isHomePage) return null;
 
     return (
       <div className="flex flex-col">
@@ -53,18 +60,15 @@ const Shop = ({
             <div className="absolute right-0 top-0 z-10 w-12 rounded-bl-lg bg-primary">
               <div className="flex flex-col items-center gap-4 p-4">
                 <button className="text-white transition-colors hover:text-green-500">
-                  <Shuffle className="h-5 w-5" />
-                </button>
-                <button className="text-white transition-colors hover:text-green-500">
-                  <Search className="h-5 w-5" />
-                </button>
-                <button className="text-white transition-colors hover:text-green-500">
                   <Heart className="h-5 w-5" />
                 </button>
               </div>
             </div>
           )}
-          <div className="relative aspect-square p-4">
+          <div 
+            className="relative aspect-square p-4 cursor-pointer"
+            onClick={() => window.location.href = `/shop/${product.machineName.toLowerCase().replace(/\s+/g, "-")}`}
+          >
             <img
               src={product.images?.[0] || "/placeholder.jpg"}
               alt={product.machineName}
@@ -73,19 +77,21 @@ const Shop = ({
           </div>
           {isHovered && (
             <div className="absolute bottom-0 left-0 right-0 bg-green-500 transition-transform duration-300">
-              <button className="w-full py-4 font-semibold text-white transition-colors hover:bg-green-600">
-                ADD TO CART
+              <button 
+                onClick={() => handleWhatsAppClick(product)}
+                className="w-full py-4 font-semibold text-white transition-colors hover:bg-green-600"
+              >
+                Buy Now
               </button>
             </div>
           )}
         </div>
-        <div className="bg-primary p-4 pb-20">
+        <div 
+          className="bg-primary p-4 pb-20 cursor-pointer"
+          onClick={() => window.location.href = `/shop/${product.machineName.toLowerCase().replace(/\s+/g, "-")}`}
+        >
           <h3 className="mb-2 text-center text-lg font-medium text-white">
-            <Link
-              href={`/shop/${product.machineName.toLowerCase().replace(/\s+/g, "-")}`}
-            >
-              {product.machineName}
-            </Link>{" "}
+            {product.machineName}
           </h3>
           <div className="mb-2 flex items-center justify-center gap-2">
             <span className="text-sm text-gray-300">
@@ -100,7 +106,6 @@ const Shop = ({
     );
   };
 
-  // Handle loading state
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-primary">
@@ -109,7 +114,6 @@ const Shop = ({
     );
   }
 
-  // Handle error state
   if (isError) {
     toast.error("Failed to fetch products");
     return (
@@ -121,7 +125,6 @@ const Shop = ({
     );
   }
 
-  // Sort products based on selected option
   const sortedProducts = [...(products?.data || [])].sort((a, b) => {
     switch (sortOption) {
       case "price-low":
@@ -135,7 +138,6 @@ const Shop = ({
     }
   });
 
-  // Limit products for home page
   const displayProducts = isHomePage
     ? sortedProducts.slice(0, initialProductCount)
     : sortedProducts;
@@ -144,8 +146,6 @@ const Shop = ({
     <div className="min-h-screen bg-primary">
       <div className="p-8">
         <div className="mx-auto flex max-w-7xl gap-8">
-          {/* Left Sidebar */}
-
           {!isHomePage && (
             <div className="hidden w-60 flex-shrink-0 md:block">
               <h2 className="mb-6 text-2xl font-bold text-white">
@@ -157,9 +157,7 @@ const Shop = ({
             </div>
           )}
 
-          {/* Main Content */}
           <div className="flex-1">
-            {/* Sorting Controls - only show on full shop page */}
             {!isHomePage && (
               <div className="mb-6 flex justify-end">
                 <div className="relative">
@@ -178,7 +176,6 @@ const Shop = ({
               </div>
             )}
 
-            {/* Products Grid */}
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {displayProducts.map((product, index) => (
                 <ProductCard key={product._id || index} product={product} />

@@ -27,23 +27,26 @@ export const assignMachineToUser = createAsyncThunk<
     }
   }
 );
+// In usermachineApi.ts
 
 export const fetchUserMachines = createAsyncThunk<
   UserMachine[], 
-  string, 
+  string,  // This can be either userId or email
   { state: RootState, rejectValue: string }
 >(
   'userMachine/fetchUserMachines',
-  async (userId, { rejectWithValue }) => {
+  async (userIdentifier, { rejectWithValue }) => {
     try {
-      const response = await axios.get<UserMachine[]>(`/api/v1/userMachine/${userId}`);
+      console.log('Fetching with identifier:', userIdentifier);
+      const response = await axios.get<UserMachine[]>(`/api/v1/userMachine/${userIdentifier}`);
+      console.log('Response:', response.data);
       return response.data;
     } catch (error: any) {
+      console.error('Full error:', error);
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch user machines');
     }
   }
 );
-
 export const updateMonthlyProfit = createAsyncThunk<
   UserMachine, 
   UpdateProfitPayload, 

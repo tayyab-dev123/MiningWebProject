@@ -13,8 +13,7 @@ function page() {
       <LandingLayout>
         <UserMachineAssignment/>
         <UserMachineList/>
-        <UserMachineDashboard/>
-        <UserMachineProfitUpdate/>
+     
       </LandingLayout>
     </div>
   )
