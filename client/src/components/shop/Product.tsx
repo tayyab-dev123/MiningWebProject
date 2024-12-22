@@ -4,6 +4,9 @@ import { Shuffle, Search, Heart, ChevronDown } from "lucide-react";
 import { useGetAllMiningMachinesQuery } from "@/lib/feature/Machines/miningMachinesApiSlice";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store/store";
+import { useRouter } from "next/navigation";
 
 const Shop = ({
   isHomePage = false,
@@ -12,14 +15,23 @@ const Shop = ({
 }) => {
   const [sortOption, setSortOption] = useState("featured");
   const { data: products, isLoading, isError } = useGetAllMiningMachinesQuery();
+  const router = useRouter();
+
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   const topProducts = products?.data?.slice(0, 3) || [];
 
   const handleWhatsAppClick = (product) => {
+    if (!isAuthenticated) {
+      router.push("/auth/signin");
+      return;
+    }
     const message = `Hi, I'm interested in buying the ${product.machineName}.\n\nDetails:\n- Hashrate: ${product.hashrate} TH/s\n- Price: $${product.priceRange}\n\nPlease provide more information.`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappUrl, "_blank");
   };
 
   const TopProductCard = ({ product }) => {
@@ -65,9 +77,13 @@ const Shop = ({
               </div>
             </div>
           )}
-          <div 
-            className="relative aspect-square p-4 cursor-pointer"
-            onClick={() => window.location.href = `/shop/${product.machineName.toLowerCase().replace(/\s+/g, "-")}`}
+          <div
+            className="relative aspect-square cursor-pointer p-4"
+            onClick={() =>
+              router.push(
+                `/shop/${product.machineName.toLowerCase().replace(/\s+/g, "-")}`,
+              )
+            }
           >
             <img
               src={product.images?.[0] || "/placeholder.jpg"}
@@ -77,7 +93,7 @@ const Shop = ({
           </div>
           {isHovered && (
             <div className="absolute bottom-0 left-0 right-0 bg-green-500 transition-transform duration-300">
-              <button 
+              <button
                 onClick={() => handleWhatsAppClick(product)}
                 className="w-full py-4 font-semibold text-white transition-colors hover:bg-green-600"
               >
@@ -86,9 +102,13 @@ const Shop = ({
             </div>
           )}
         </div>
-        <div 
-          className="bg-primary p-4 pb-20 cursor-pointer"
-          onClick={() => window.location.href = `/shop/${product.machineName.toLowerCase().replace(/\s+/g, "-")}`}
+        <div
+          className="cursor-pointer bg-primary p-4 pb-20"
+          onClick={() =>
+            router.push(
+              `/shop/${product.machineName.toLowerCase().replace(/\s+/g, "-")}`,
+            )
+          }
         >
           <h3 className="mb-2 text-center text-lg font-medium text-white">
             {product.machineName}
@@ -158,7 +178,7 @@ const Shop = ({
           )}
 
           <div className="flex-1">
-            {!isHomePage && (
+            {/* {!isHomePage && (
               <div className="mb-6 flex justify-end">
                 <div className="relative">
                   <select
@@ -174,7 +194,7 @@ const Shop = ({
                   <ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
                 </div>
               </div>
-            )}
+            )} */}
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {displayProducts.map((product, index) => (

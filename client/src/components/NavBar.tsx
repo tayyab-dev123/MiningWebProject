@@ -8,7 +8,6 @@ import { router } from "next/navigation";
 import { useGetCurrentUserQuery } from "@/lib/feature/auth/authThunk";
 import { usePathname } from "next/navigation";
 
-
 interface NavLink {
   label: string;
   href: string;
@@ -23,14 +22,14 @@ const NavBar = () => {
     "Auth State:",
     useSelector((state: RootState) => state.auth),
   );
-  
+
   const { isLoading } = useGetCurrentUserQuery();
   const dispatch = useDispatch();
   const pathname = usePathname();
 
   const handleLogout = async () => {
     try {
-      await logout().unwrap();
+      await logout();
       dispatch(setUser(null));
       router.push("/");
     } catch (error) {
@@ -40,10 +39,10 @@ const NavBar = () => {
 
   const userMenuItems: NavLink[] = [
     { label: "Profile", href: "/profile" },
- 
+
     {
       label: "Logout",
-      href: "#",
+      href: "/",
       onClick: handleLogout,
     },
   ];
@@ -54,8 +53,6 @@ const NavBar = () => {
     { label: "ABOUT US", href: "/about" },
     { label: "CONTACT US", href: "/contactUs" },
   ];
-
-
 
   return (
     <header className="bg-[#101010] text-white">
@@ -77,9 +74,10 @@ const NavBar = () => {
                     key={link.label}
                     href={link.href}
                     className={`relative pb-2 text-white transition-colors 
-                      ${pathname === link.href 
-                        ? 'text-green-500 font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-green-500' 
-                        : 'hover:text-green-500'
+                      ${
+                        pathname === link.href
+                          ? "font-semibold text-green-500 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-green-500"
+                          : "hover:text-green-500"
                       }`}
                   >
                     {link.label}
@@ -87,7 +85,7 @@ const NavBar = () => {
                 ))}
               </div>
               {/* Bottom Line */}
-              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gray-700"></div>
+              <div className="absolute bottom-0 left-0 h-[1px] w-full bg-gray-700"></div>
             </div>
             {/* Main Navigation */}
             <div className="flex items-center space-x-6">
@@ -99,7 +97,7 @@ const NavBar = () => {
                     <User className="h-5 w-5" />
                     <span>{user?.firstName || "My Account"}</span>
                   </button>
-                  <div className="absolute right-0 mt-2 hidden w-48 rounded-md bg-white py-1 shadow-lg group-hover:block">
+                  <div className="invisible absolute right-0 top-full w-48 rounded-md bg-white py-1 shadow-lg group-hover:visible">
                     {userMenuItems.map((item) => (
                       <Link
                         key={item.label}
@@ -121,8 +119,8 @@ const NavBar = () => {
                 </Link>
               )}
               <div className="flex items-center space-x-4">
-                <IconWithBadge Icon={Heart} count={0} />
-                <IconWithBadge Icon={ShoppingCart} count={0} />
+                {/* <IconWithBadge Icon={Heart} count={0} />
+                <IconWithBadge Icon={ShoppingCart} count={0} /> */}
               </div>
             </div>
           </div>
@@ -145,7 +143,7 @@ const NavBar = () => {
             <span className="text-lg font-bold">wemine</span>
           </div>
 
-          <IconWithBadge Icon={ShoppingCart} count={0} />
+          {/* <IconWithBadge Icon={ShoppingCart} count={0} /> */}
         </div>
 
         {/* Mobile Menu Overlay */}
@@ -187,7 +185,7 @@ const NavBar = () => {
                 >
                   WISHLIST
                 </a>
-               
+
                 <a
                   href="#"
                   className="py-2 transition-colors hover:text-green-500"
