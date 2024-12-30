@@ -41,7 +41,7 @@ const FloatingWhatsApp = ({ phoneNumber = '1234567890' }) => {
           className="fixed bottom-8 right-8 p-3 rounded-full bg-green-500 text-white shadow-lg transition-all duration-300 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 z-50"
           aria-label="Chat on WhatsApp"
         >
-          <MessageCircle className="h-6 w-6" />
+          <MessageCircle className="h-9 w-9" />
         </button>
       )}
     </>

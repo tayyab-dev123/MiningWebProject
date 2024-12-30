@@ -2,11 +2,12 @@ import cron from 'node-cron';
 import UserMachine from './model/UserMAchine.js';
 import mongoose from 'mongoose';
 
-const BATCH_SIZE = 100; 
+const BATCH_SIZE = 100;
 
 const updateMonthlyProfit = async (userMachineId) => {
   const session = await mongoose.startSession();
   session.startTransaction();
+  
   try {
     const userMachine = await UserMachine.findById(userMachineId)
       .populate('machine')
@@ -20,25 +21,24 @@ const updateMonthlyProfit = async (userMachineId) => {
     const machineProfit = userMachine.machine.ProfitAdmin;
     const lastUpdate = userMachine.lastProfitUpdate || userMachine.assignedDate;
     const currentDate = new Date();
-   
-    const daysSinceUpdate = Math.floor(
-      (currentDate - lastUpdate) / (1000 * 60 * 60 * 24)
+    
+    // Changed to hours
+    const hoursSinceUpdate = Math.floor(
+      (currentDate - lastUpdate) / (1000 * 60 * 60)
     );
 
-    if (daysSinceUpdate >= 30) {
-      const periodsToUpdate = Math.floor(daysSinceUpdate / 30);
-     
+    if (hoursSinceUpdate >= 1) {  // Check if at least 1 hour has passed
+      const periodsToUpdate = hoursSinceUpdate;  // Each hour is a period
+      
       userMachine.monthlyProfitAccumulated += (machineProfit * periodsToUpdate);
-      userMachine.lastProfitUpdate = new Date(
-        currentDate - (daysSinceUpdate % 30) * 24 * 60 * 60 * 1000
-      );
+      userMachine.lastProfitUpdate = new Date();
 
       await userMachine.save({ session });
       console.log(`Updated profit for machine ${userMachineId}: +${machineProfit * periodsToUpdate}`);
     }
 
     await session.commitTransaction();
-    return { updated: daysSinceUpdate >= 30, userMachineId };
+    return { updated: hoursSinceUpdate >= 1, userMachineId };
   } catch (error) {
     await session.abortTransaction();
     console.error(`Error updating profit for machine ${userMachineId}:`, error);
@@ -49,31 +49,39 @@ const updateMonthlyProfit = async (userMachineId) => {
 };
 
 export const setupAutoProfitUpdates = () => {
-  // Run every day at midnight
-  cron.schedule('0 0 * * *', async () => {
-    console.log('Starting daily profit updates check...');
-   
+  // Run every hour
+  cron.schedule('0 * * * *', async () => {
+    console.log('Starting automated profit update:', new Date());
+    
     try {
-      const totalUserMachines = await UserMachine.countDocuments({ status: 'active' });
-      console.log(`Total active user machines: ${totalUserMachines}`);
+      const userMachines = await UserMachine.find({ status: 'active' })
+        .populate('machine');
 
-      for (let skip = 0; skip < totalUserMachines; skip += BATCH_SIZE) {
-        const userMachines = await UserMachine.find({ status: 'active' })
-          .populate('machine')
-          .skip(skip)
-          .limit(BATCH_SIZE);
-
-        const updateResults = await Promise.all(
-          userMachines.map(machine => updateMonthlyProfit(machine._id))
+      for (const machine of userMachines) {
+        const lastUpdate = machine.lastProfitUpdate || machine.assignedDate;
+        const currentDate = new Date();
+        const hoursSinceUpdate = Math.floor(
+          (currentDate.getTime() - new Date(lastUpdate).getTime()) / (1000 * 60 * 60)
         );
 
-        const updatedCount = updateResults.filter(result => result.updated).length;
-        console.log(`Batch processed: ${updatedCount} machines updated`);
+        if (hoursSinceUpdate >= 1) {
+          const profitPerHour = machine.machine.ProfitAdmin / 24;
+          const profitToAdd = profitPerHour * hoursSinceUpdate;
+
+          machine.monthlyProfitAccumulated += profitToAdd;
+          machine.lastProfitUpdate = currentDate;
+
+          await machine.save();
+          
+          console.log(`Updated profit for machine ${machine._id}:`, {
+            hoursProcessed: hoursSinceUpdate,
+            profitAdded: profitToAdd,
+            newTotal: machine.monthlyProfitAccumulated
+          });
+        }
       }
-     
-      console.log('Daily profit updates completed');
     } catch (error) {
-      console.error('Error in daily profit updates:', error);
+      console.error('Auto profit update error:', error);
     }
   });
 };

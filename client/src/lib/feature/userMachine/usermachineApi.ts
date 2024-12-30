@@ -55,7 +55,7 @@ export const updateMonthlyProfit = createAsyncThunk<
   'userMachine/updateProfit',
   async ({ userMachineId, profitAmount }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch<UserMachine>(`/api/v1//profit/${userMachineId}`, { 
+      const response = await axios.patch<UserMachine>(`/api/v1/profit/${userMachineId}`, { 
         profitAmount 
       });
       return response.data;

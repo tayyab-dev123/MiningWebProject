@@ -193,15 +193,16 @@ export const getProfitUpdateStatus = async (req, res) => {
 
     const lastUpdate = userMachine.lastProfitUpdate || userMachine.assignedDate;
     const currentDate = new Date();
-    const daysSinceUpdate = Math.floor((currentDate - lastUpdate) / (1000 * 60 * 60 * 24));
+    // Changed from days to hours
+    const hoursSinceUpdate = Math.floor((currentDate - lastUpdate) / (1000 * 60 * 60));
 
     res.status(200).json({
       userMachineId: userMachine._id,
       userName: `${userMachine.user.firstName} ${userMachine.user.lastName}`,
       machineName: userMachine.machine.machineName,
       lastUpdateDate: lastUpdate,
-      daysSinceLastUpdate: daysSinceUpdate,
-      daysUntilNextUpdate: Math.max(0, 30 - daysSinceUpdate),
+      hoursSinceLastUpdate: hoursSinceUpdate,
+      hoursUntilNextUpdate: Math.max(0, 1 - hoursSinceUpdate), // Changed from 30 days to 1 hour
       currentAccumulatedProfit: userMachine.monthlyProfitAccumulated,
       status: userMachine.status
     });
@@ -235,40 +236,54 @@ export const updateMonthlyProfit = async (req, res) => {
       return res.status(400).json({ message: 'Machine is not active' });
     }
 
-    const machineProfit = userMachine.machine.ProfitAdmin;
+    // Calculate profit since assignment or last update
     const lastUpdate = userMachine.lastProfitUpdate || userMachine.assignedDate;
     const currentDate = new Date();
     
-    const daysSinceUpdate = Math.floor((currentDate - lastUpdate) / (1000 * 60 * 60 * 24));
+    // Calculate hours since last update
+    const hoursSinceUpdate = Math.floor(
+      (currentDate.getTime() - new Date(lastUpdate).getTime()) / (1000 * 60 * 60)
+    );
 
-    if (daysSinceUpdate >= 30) {
-      const periodsToUpdate = Math.floor(daysSinceUpdate / 30);
+    // Debug logging
+    console.log('Profit Update Debug:', {
+      machineId: userMachineId,
+      lastUpdate: lastUpdate,
+      currentDate: currentDate,
+      hoursSinceUpdate: hoursSinceUpdate,
+      currentAccumulatedProfit: userMachine.monthlyProfitAccumulated,
+      machineProfit: userMachine.machine.ProfitAdmin
+    });
+
+    if (hoursSinceUpdate >= 1) {
+      const profitPerHour = userMachine.machine.ProfitAdmin / 24; // Daily profit divided by 24 hours
+      const profitToAdd = profitPerHour * hoursSinceUpdate;
       
-      userMachine.monthlyProfitAccumulated += (machineProfit * periodsToUpdate);
-      userMachine.lastProfitUpdate = new Date(
-        currentDate - (daysSinceUpdate % 30) * 24 * 60 * 60 * 1000
-      );
+      userMachine.monthlyProfitAccumulated += profitToAdd;
+      userMachine.lastProfitUpdate = currentDate;
 
       await userMachine.save({ session });
       await session.commitTransaction();
 
-      res.status(200).json({
+      return res.status(200).json({
         message: 'Profit updated successfully',
-        periodsUpdated: periodsToUpdate,
-        profitAdded: machineProfit * periodsToUpdate,
-        newTotal: userMachine.monthlyProfitAccumulated
+        hoursProcessed: hoursSinceUpdate,
+        profitAdded: profitToAdd,
+        newTotal: userMachine.monthlyProfitAccumulated,
+        nextUpdateIn: '1 hour'
       });
     } else {
       await session.commitTransaction();
-      res.status(200).json({
-        message: 'Not yet time for profit update',
-        daysUntilNextUpdate: 30 - daysSinceUpdate
+      return res.status(200).json({
+        message: 'Too soon for next update',
+        minutesUntilNextUpdate: 60 - ((hoursSinceUpdate * 60) % 60),
+        currentProfit: userMachine.monthlyProfitAccumulated
       });
     }
   } catch (error) {
     await session.abortTransaction();
-    console.error('Error updating profit:', error);
-    res.status(500).json({ 
+    console.error('Profit update error:', error);
+    return res.status(500).json({ 
       message: 'Error updating profit',
       error: error.message 
     });
@@ -276,6 +291,7 @@ export const updateMonthlyProfit = async (req, res) => {
     session.endSession();
   }
 };
+
 
 export const manualProfitUpdate = async (req, res) => {
   const session = await mongoose.startSession();
