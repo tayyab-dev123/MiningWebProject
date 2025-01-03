@@ -1,14 +1,29 @@
-'use client'
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Monitor, Calendar, DollarSign, Clock, Battery, AlertCircle, Zap } from 'lucide-react';
-import { fetchUserMachines, fetchProfitUpdateStatus } from '@/lib/feature/userMachine/usermachineApi';
-import { RootState } from '@/lib/store/store';
+"use client";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Monitor,
+  Calendar,
+  DollarSign,
+  Clock,
+  Battery,
+  AlertCircle,
+  Zap,
+} from "lucide-react";
+import {
+  fetchUserMachines,
+  fetchProfitUpdateStatus,
+} from "@/lib/feature/userMachine/usermachineApi";
+import { RootState } from "@/lib/store/store";
 
 const UserMachinesDashboard = () => {
   const dispatch = useDispatch();
-  const { userMachines, isLoading, error } = useSelector((state: RootState) => state.userMachine);
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { userMachines, isLoading, error } = useSelector(
+    (state: RootState) => state.userMachine,
+  );
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,7 +31,7 @@ const UserMachinesDashboard = () => {
         try {
           await dispatch(fetchUserMachines(user.email)).unwrap();
         } catch (error) {
-          console.error('Error fetching machines:', error);
+          console.error("Error fetching machines:", error);
         }
       }
     };
@@ -30,11 +45,13 @@ const UserMachinesDashboard = () => {
     useEffect(() => {
       const fetchProfitStatus = async () => {
         try {
-          const result = await dispatch(fetchProfitUpdateStatus(machine._id)).unwrap();
+          const result = await dispatch(
+            fetchProfitUpdateStatus(machine._id),
+          ).unwrap();
           setProfitStatus(result);
           setLoading(false);
         } catch (error) {
-          console.error('Error fetching profit status:', error);
+          console.error("Error fetching profit status:", error);
           setLoading(false);
         }
       };
@@ -50,12 +67,15 @@ const UserMachinesDashboard = () => {
     return (
       <div className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-black p-6 transition-all duration-500 hover:border-[#21eb00] hover:shadow-lg hover:shadow-[#21eb00]/10">
         <div className="absolute inset-0 bg-gradient-to-br from-[#21eb00]/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-        
+
         {/* Enhanced Progress Circle */}
         <div className="absolute right-6 top-6 h-20 w-20">
           {!loading && profitStatus && (
             <div className="relative h-full w-full">
-              <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 36 36">
+              <svg
+                className="h-full w-full -rotate-90 transform"
+                viewBox="0 0 36 36"
+              >
                 {/* Background circle */}
                 <circle
                   cx="18"
@@ -93,9 +113,13 @@ const UserMachinesDashboard = () => {
           {/* Status Badge */}
           <div className="mb-6 flex items-center space-x-2">
             <div className="flex items-center space-x-2 rounded-full bg-zinc-900/80 px-3 py-1.5">
-              <div className={`h-2 w-2 rounded-full ${
-                machine.status === 'active' ? 'bg-[#21eb00] animate-pulse' : 'bg-red-500'
-              }`} />
+              <div
+                className={`h-2 w-2 rounded-full ${
+                  machine.status === "active"
+                    ? "animate-pulse bg-[#21eb00]"
+                    : "bg-red-500"
+                }`}
+              />
               <span className="text-sm font-medium text-zinc-400">
                 {machine.status}
               </span>
@@ -105,11 +129,11 @@ const UserMachinesDashboard = () => {
           {/* Machine Info */}
           <div className="mb-6">
             <h3 className="mb-1 text-xl font-semibold text-zinc-200 transition-colors duration-300 group-hover:text-white">
-              {machine.machine?.machineName || 'Machine Name N/A'}
+              {machine.machine?.machineName || "Machine Name N/A"}
             </h3>
             <div className="flex items-center space-x-2 text-sm text-zinc-500">
               <Monitor className="h-4 w-4" />
-              <span>{machine.machine?.model || 'Model N/A'}</span>
+              <span>{machine.machine?.model || "Model N/A"}</span>
             </div>
           </div>
 
@@ -122,35 +146,34 @@ const UserMachinesDashboard = () => {
                 <span className="text-sm">Accumulated</span>
               </div>
               <p className="text-lg font-semibold text-white">
-                ${machine.monthlyProfitAccumulated?.toFixed(2) || '0.00'}
+                ${machine.monthlyProfitAccumulated || "0.00"}
               </p>
             </div>
 
             {/* Monthly Profit */}
-            <div className="space-y-2 rounded-xl bg-zinc-900/50 p-3">
+            {/* <div className="space-y-2 rounded-xl bg-zinc-900/50 p-3">
               <div className="flex items-center space-x-2 text-zinc-400">
                 <Zap className="h-4 w-4 text-yellow-500" />
                 <span className="text-sm">Monthly</span>
               </div>
               <p className="text-lg font-semibold text-white">
-                ${machine.machine?.ProfitAdmin?.toFixed(2) || '0.00'}
+                ${machine.machine?.ProfitAdmin?.toFixed(2) || "0.00"}
               </p>
-            </div>
+            </div> */}
           </div>
 
           {/* Bottom Stats */}
           <div className="mt-6 flex items-center justify-between text-sm text-zinc-500">
             <div className="flex items-center space-x-1">
               <Calendar className="h-4 w-4" />
-              <span>
-                {new Date(machine.assignedDate).toLocaleDateString()}
-              </span>
+              <span>{new Date(machine.assignedDate).toLocaleDateString()}</span>
             </div>
             {profitStatus && (
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
                 <span>
-                  Last Update: {new Date(profitStatus.lastUpdateDate).toLocaleDateString()}
+                  Last Update:{" "}
+                  {new Date(profitStatus.lastUpdateDate).toLocaleDateString()}
                 </span>
               </div>
             )}
@@ -174,14 +197,14 @@ const UserMachinesDashboard = () => {
         <div className="flex items-center justify-between">
           <h2 className="mb-2 text-2xl font-semibold lg:text-3xl">
             Your Mining Machines
-            <span className="ml-2 text-sm text-zinc-500">
-            </span>
+            <span className="ml-2 text-sm text-zinc-500"></span>
           </h2>
           <div className="flex space-x-4">
             <div className="flex items-center space-x-2 rounded-lg bg-zinc-900/50 px-4 py-2">
               <Battery className="h-5 w-5 text-[#21eb00]" />
               <span className="text-sm text-zinc-400">
-                {userMachines?.filter(m => m.status === 'active').length || 0} Active Machines
+                {userMachines?.filter((m) => m.status === "active").length || 0}{" "}
+                Active Machines
               </span>
             </div>
           </div>
@@ -192,7 +215,7 @@ const UserMachinesDashboard = () => {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-red-500">
+        <div className="border-red-500/20 bg-red-500/10 text-red-500 mb-4 rounded-lg border p-4">
           <div className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5" />
             <p>Error: {error}</p>
@@ -208,9 +231,7 @@ const UserMachinesDashboard = () => {
         ) : (
           <div className="col-span-full flex min-h-[200px] items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/50">
             <p className="text-zinc-400">
-              {isLoading 
-                ? 'Loading machines...' 
-                : 'No machines assigned yet.'}
+              {isLoading ? "Loading machines..." : "No machines assigned yet."}
             </p>
           </div>
         )}

@@ -1,46 +1,46 @@
-'use client'
-import React, { useState } from 'react';
-import { 
-  Trash2, 
-  Eye, 
-  Server, 
-  DollarSign, 
+"use client";
+import React, { useState } from "react";
+import {
+  Trash2,
+  Eye,
+  Server,
+  DollarSign,
   AlertTriangle,
   Loader2,
-  RefreshCw
-} from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+  RefreshCw,
+} from "lucide-react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
-import { 
-  fetchAllUserMachines, 
-  removeUserMachine 
-} from '@/lib/feature/userMachine/usermachineApi';
-import { useAppSelector } from '@/lib/store/reduxHooks';
+import {
+  fetchAllUserMachines,
+  removeUserMachine,
+} from "@/lib/feature/userMachine/usermachineApi";
+import { useAppSelector } from "@/lib/store/reduxHooks";
 
 const SerMachineList: React.FC = () => {
   const dispatch = useDispatch();
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null);
 
   // Fetch all user machines
-  const { 
-    allUserMachines = [], 
-    isLoading, 
-    error 
-  } = useAppSelector(state => state.userMachine);
+  const {
+    allUserMachines = [],
+    isLoading,
+    error,
+  } = useAppSelector((state) => state.userMachine);
 
   // Handle machine removal
   const handleRemoveMachine = async (userMachineId: string) => {
     try {
       await dispatch(removeUserMachine(userMachineId)).unwrap();
-      toast.success('Machine assignment removed successfully', {
+      toast.success("Machine assignment removed successfully", {
         position: "top-right",
-        theme: "dark"
+        theme: "dark",
       });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to remove machine assignment', {
+      toast.error(err.message || "Failed to remove machine assignment", {
         position: "top-right",
-        theme: "dark"
+        theme: "dark",
       });
     }
   };
@@ -53,8 +53,8 @@ const SerMachineList: React.FC = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="bg-gray-800 rounded-2xl p-6 min-h-[400px] flex flex-col items-center justify-center">
-        <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
+      <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl bg-gray-800 p-6">
+        <Loader2 className="mb-4 h-12 w-12 animate-spin text-blue-500" />
         <p className="text-gray-300">Loading user machines...</p>
       </div>
     );
@@ -63,16 +63,16 @@ const SerMachineList: React.FC = () => {
   // Error state
   if (error) {
     return (
-      <div className="bg-red-900/20 rounded-2xl p-6 min-h-[400px] flex flex-col items-center justify-center">
-        <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
+      <div className="bg-red-900/20 flex min-h-[400px] flex-col items-center justify-center rounded-2xl p-6">
+        <AlertTriangle className="text-red-500 mb-4 h-12 w-12" />
         <p className="text-red-400 mb-4 text-center">
           Failed to load user machines
         </p>
-        <button 
+        <button
           onClick={() => dispatch(fetchAllUserMachines())}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
+          className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
         >
-          <RefreshCw className="w-4 h-4 mr-2" />
+          <RefreshCw className="mr-2 h-4 w-4" />
           Retry
         </button>
       </div>
@@ -80,10 +80,12 @@ const SerMachineList: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700">
-      <div className="p-6 border-b border-gray-700 flex items-center">
-        <Server className="w-8 h-8 text-secondary mr-4" />
-        <h2 className="text-2xl font-bold text-white">User Machine Assignments</h2>
+    <div className="rounded-2xl border border-gray-700 bg-gray-800 shadow-2xl">
+      <div className="flex items-center border-b border-gray-700 p-6">
+        <Server className="mr-4 h-8 w-8 text-secondary" />
+        <h2 className="text-2xl font-bold text-white">
+          User Machine Assignments
+        </h2>
       </div>
 
       <div className="overflow-x-auto">
@@ -98,16 +100,16 @@ const SerMachineList: React.FC = () => {
           </thead>
           <tbody>
             {allUserMachines.map((userMachine) => (
-              <tr 
-                key={userMachine._id} 
-                className="border-b border-gray-700 hover:bg-gray-700/50 transition-colors"
+              <tr
+                key={userMachine._id}
+                className="border-b border-gray-700 transition-colors hover:bg-gray-700/50"
               >
                 <td className="p-4">
                   <div className="flex items-center">
                     <span className="font-medium text-white">
                       {userMachine.user?.firstName} {userMachine.user?.lastName}
                     </span>
-                    <span className="text-gray-400 ml-2">
+                    <span className="ml-2 text-gray-400">
                       ({userMachine.user?.email})
                     </span>
                   </div>
@@ -119,9 +121,9 @@ const SerMachineList: React.FC = () => {
                 </td>
                 <td className="p-4 text-center">
                   <div className="flex items-center justify-center">
-                    <DollarSign className="w-4 h-4 mr-2 text-green-500" />
+                    <DollarSign className="mr-2 h-4 w-4 text-green-500" />
                     <span className="font-bold text-green-400">
-                      ${userMachine.monthlyProfitAccumulated?.toFixed(2) || '0.00'}
+                      ${userMachine.monthlyProfitAccumulated || "0.00"}
                     </span>
                   </div>
                 </td>
@@ -132,7 +134,7 @@ const SerMachineList: React.FC = () => {
                       className="text-red-500 hover:text-red-600 transition-colors"
                       title="Remove Assignment"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
                 </td>

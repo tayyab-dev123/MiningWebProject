@@ -1,12 +1,12 @@
-import { User } from './user';
+import { User } from "./user";
 
 export interface UserMachine {
   _id?: string;
   user: string | User;
-  machine: string ;
+  machine: string;
   assignedDate?: Date;
   monthlyProfitAccumulated: number;
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
 }
 
 export interface UserMachineState {
@@ -27,7 +27,6 @@ export interface UpdateProfitPayload {
   userMachineId: string;
   profitAmount: number;
 }
-
 
 export interface ProfitUpdateStatus {
   userMachineId: string;

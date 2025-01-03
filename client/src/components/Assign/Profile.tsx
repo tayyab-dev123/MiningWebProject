@@ -1,28 +1,30 @@
-'use client'
-import React, { useState, useEffect } from 'react';
-import { 
-  DollarSign, 
-  RefreshCw, 
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  DollarSign,
+  RefreshCw,
   CheckCircle2,
-  AlertTriangle 
-} from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+  AlertTriangle,
+} from "lucide-react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
-import { 
-  fetchAllUserMachines, 
+import {
+  fetchAllUserMachines,
   updateMonthlyProfit,
-  fetchProfitUpdateStatus 
-} from '@/lib/feature/userMachine/usermachineApi';
-import { useUpdateProfileMutation } from '@/lib/feature/auth/authThunk';
+  fetchProfitUpdateStatus,
+} from "@/lib/feature/userMachine/usermachineApi";
+import { useUpdateProfileMutation } from "@/lib/feature/auth/authThunk";
 
 const UserMachineProfitUpdate: React.FC = () => {
   const dispatch = useDispatch();
-  const [selectedUserMachine, setSelectedUserMachine] = useState('');
-  const [profitAmount, setProfitAmount] = useState('');
+  const [selectedUserMachine, setSelectedUserMachine] = useState("");
+  const [profitAmount, setProfitAmount] = useState("");
   const [updateStatus, setUpdateStatus] = useState<any>(null);
 
-  const { allUserMachines } = useUpdateProfileMutation(state => state.userMachine);
+  const { allUserMachines } = useUpdateProfileMutation(
+    (state) => state.userMachine,
+  );
 
   // Fetch user machines on mount
   useEffect(() => {
@@ -32,10 +34,11 @@ const UserMachineProfitUpdate: React.FC = () => {
   // Fetch profit update status when a user machine is selected
   useEffect(() => {
     if (selectedUserMachine) {
-      dispatch(fetchProfitUpdateStatus(selectedUserMachine))
-        .then((response: any) => {
+      dispatch(fetchProfitUpdateStatus(selectedUserMachine)).then(
+        (response: any) => {
           setUpdateStatus(response.payload);
-        });
+        },
+      );
     }
   }, [selectedUserMachine, dispatch]);
 
@@ -43,58 +46,61 @@ const UserMachineProfitUpdate: React.FC = () => {
     e.preventDefault();
 
     if (!selectedUserMachine) {
-      toast.error('Please select a user machine', {
+      toast.error("Please select a user machine", {
         position: "top-right",
-        theme: "dark"
+        theme: "dark",
       });
       return;
     }
 
     if (!profitAmount || isNaN(Number(profitAmount))) {
-      toast.error('Please enter a valid profit amount', {
+      toast.error("Please enter a valid profit amount", {
         position: "top-right",
-        theme: "dark"
+        theme: "dark",
       });
       return;
     }
 
     try {
-      await dispatch(updateMonthlyProfit({
-        userMachineId: selectedUserMachine,
-        profitAmount: Number(profitAmount)
-      })).unwrap();
+      await dispatch(
+        updateMonthlyProfit({
+          userMachineId: selectedUserMachine,
+          profitAmount: Number(profitAmount),
+        }),
+      ).unwrap();
 
-      toast.success('Profit updated successfully', {
+      toast.success("Profit updated successfully", {
         position: "top-right",
-        theme: "dark"
+        theme: "dark",
       });
 
       // Reset form and refetch status
-      setProfitAmount('');
-      dispatch(fetchProfitUpdateStatus(selectedUserMachine))
-        .then((response: any) => {
+      setProfitAmount("");
+      dispatch(fetchProfitUpdateStatus(selectedUserMachine)).then(
+        (response: any) => {
           setUpdateStatus(response.payload);
-        });
+        },
+      );
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update profit', {
+      toast.error(err.message || "Failed to update profit", {
         position: "top-right",
-        theme: "dark"
+        theme: "dark",
       });
     }
   };
 
   return (
-    <div className="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700">
-      <div className="p-6 border-b border-gray-700 flex items-center">
-        <DollarSign className="w-8 h-8 text-green-500 mr-4" />
+    <div className="rounded-2xl border border-gray-700 bg-gray-800 shadow-2xl">
+      <div className="flex items-center border-b border-gray-700 p-6">
+        <DollarSign className="mr-4 h-8 w-8 text-green-500" />
         <h2 className="text-2xl font-bold text-white">Update Machine Profit</h2>
       </div>
 
-      <form onSubmit={handleProfitUpdate} className="p-6 space-y-4">
+      <form onSubmit={handleProfitUpdate} className="space-y-4 p-6">
         <div>
-          <label 
-            htmlFor="userMachine" 
-            className="block text-sm font-medium text-gray-300 mb-2"
+          <label
+            htmlFor="userMachine"
+            className="mb-2 block text-sm font-medium text-gray-300"
           >
             Select User Machine
           </label>
@@ -102,23 +108,24 @@ const UserMachineProfitUpdate: React.FC = () => {
             id="userMachine"
             value={selectedUserMachine}
             onChange={(e) => setSelectedUserMachine(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-green-500"
+            className="w-full rounded-lg bg-gray-700 px-4 py-3 text-white focus:ring-2 focus:ring-green-500"
           >
             <option value="">Select a user machine</option>
             {allUserMachines?.map((um) => (
               <option key={um._id} value={um._id}>
-                {um.user?.firstName} {um.user?.lastName} - {um.machine?.machineName}
+                {um.user?.firstName} {um.user?.lastName} -{" "}
+                {um.machine?.machineName}
               </option>
             ))}
           </select>
         </div>
 
         {selectedUserMachine && updateStatus && (
-          <div className="bg-gray-700 rounded-lg p-4 space-y-2">
+          <div className="space-y-2 rounded-lg bg-gray-700 p-4">
             <div className="flex justify-between">
               <span className="text-gray-400">Current Accumulated Profit:</span>
               <span className="font-bold text-green-400">
-                ${updateStatus.currentAccumulatedProfit?.toFixed(2)}
+                ${updateStatus.currentAccumulatedProfit}
               </span>
             </div>
             <div className="flex justify-between">
@@ -129,14 +136,14 @@ const UserMachineProfitUpdate: React.FC = () => {
         )}
 
         <div>
-          <label 
-            htmlFor="profitAmount" 
-            className="block text-sm font-medium text-gray-300 mb-2"
+          <label
+            htmlFor="profitAmount"
+            className="mb-2 block text-sm font-medium text-gray-300"
           >
             Profit Amount
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <DollarSign className="h-5 w-5 text-gray-400" />
             </div>
             <input
@@ -144,7 +151,7 @@ const UserMachineProfitUpdate: React.FC = () => {
               id="profitAmount"
               value={profitAmount}
               onChange={(e) => setProfitAmount(e.target.value)}
-              className="w-full px-4 pl-10 py-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full rounded-lg bg-gray-700 px-4 py-3 pl-10 text-white focus:ring-2 focus:ring-green-500"
               placeholder="Enter profit amount"
             />
           </div>
@@ -152,9 +159,9 @@ const UserMachineProfitUpdate: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+          className="flex w-full items-center justify-center rounded-lg bg-green-600 py-3 text-white transition-colors hover:bg-green-700"
         >
-          <CheckCircle2 className="w-5 h-5 mr-2" />
+          <CheckCircle2 className="mr-2 h-5 w-5" />
           Update Profit
         </button>
       </form>

@@ -52,7 +52,7 @@ export const AdminNavbar = () => {
               href="/AllUser"
               className="text-gray-300 hover:text-[#21eb00]"
             >
-              ALl User
+              All User
             </Link>
             <Link
               href="/ProductTable"
@@ -60,10 +60,7 @@ export const AdminNavbar = () => {
             >
               Add Machine{" "}
             </Link>
-            <Link
-              href="/Assign"
-              className="text-gray-300 hover:text-[#21eb00]"
-            >
+            <Link href="/Assign" className="text-gray-300 hover:text-[#21eb00]">
               Sign Machine{" "}
             </Link>
           </div>
