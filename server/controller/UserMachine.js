@@ -2,6 +2,7 @@ import UserMachine from '../model/UserMAchine.js';
 import User from '../model/UserModel.js';
 import MiningMachine from '../model/MiningMachine.js';
 import mongoose from 'mongoose';
+import { sendEmail } from '../helper/emailServer.js';
 
 export const assignMachineToUser = async (req, res) => {
   const session = await mongoose.startSession();
@@ -54,6 +55,19 @@ export const assignMachineToUser = async (req, res) => {
     });
 
     await userMachine.save({ session });
+
+    const emailData = {
+      userName: `${user.firstName} ${user.lastName}`,
+      machineName: machine.machineName.toString(),
+      assignedDate: userMachine.assignedDate.toLocaleDateString(),
+      profitRate: machine.ProfitAdmin.toString()
+    };
+    await sendEmail(
+      user.email,
+      'New Mining Machine Assigned',
+      'machineAssignment',
+      emailData
+    );
 
     await session.commitTransaction();
     session.endSession();
