@@ -15,14 +15,24 @@ import { useRouter } from "next/navigation";
 import { logout, setUser } from "@/lib/feature/auth/authSlice";
 import { useDispatch } from "react-redux";
 
-const DashboardLayout = ({ children }) => {
+interface MenuLinkProps {
+  link: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  label: string;
+}
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const MenuLink = ({ link, icon: Icon, label }) => {
-    const handleClick = (e) => {
+  const MenuLink:React.FC<MenuLinkProps> = ({ link, icon: Icon, label }) => {
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault();
       if (label === "Logout") {
         setShowLogoutModal(true);
@@ -104,7 +114,7 @@ const DashboardLayout = ({ children }) => {
               icon={Settings}
               label="Total Machine"
             />
-            <MenuLink link="/profile" icon={User} label="Profile" />
+            <MenuLink link="/profile/withdraw" icon={User} label="Profile" />
             <MenuLink link="#" icon={LogOut} label="Logout" />
           </nav>
         </div>

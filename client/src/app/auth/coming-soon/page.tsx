@@ -1,5 +1,4 @@
 import React from "react";
-import CountDownTimer from "@/components/CountDownTimer";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -42,7 +41,6 @@ const ComingSoon: React.FC = () => {
 
           {/* <!-- Countdown timer start --> */}
           <div className="mt-10 flex justify-center">
-            <CountDownTimer />
           </div>
           {/* <!-- Countdown timer start --> */}
 

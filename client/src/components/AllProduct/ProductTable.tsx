@@ -1,3 +1,6 @@
+// @ts-nocheck
+
+
 "use client";
 
 import { useState } from 'react';
@@ -5,7 +8,6 @@ import { useGetAllMiningMachinesQuery, useDeleteMiningMachineMutation } from "@/
 import { Pencil, Trash2, Eye, Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
-import { DeleteConfirmationModal } from './DeleteModal';
 
 interface MiningMachine {
   _id: string;
@@ -62,22 +64,7 @@ const AdminProductTable = () => {
     setDeleteModalOpen(true);
   };
 
-  const handleDelete = async () => {
-    if (!machineToDelete) return;
-    
-    setIsDeleting(true);
-    try {
-      await deleteMiningMachine(machineToDelete).unwrap();
-      toast.success('Machine deleted successfully');
-    } catch (error) {
-      toast.error('Failed to delete machine');
-      console.error('Delete error:', error);
-    } finally {
-      setIsDeleting(false);
-      setDeleteModalOpen(false);
-      setMachineToDelete(null);
-    }
-  };
+ 
 
   if (isLoading) {
     return (

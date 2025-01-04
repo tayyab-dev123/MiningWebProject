@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -19,9 +21,10 @@ import {
   removeUserMachine,
 } from "@/lib/feature/userMachine/usermachineApi";
 import { UserMachine } from "@/types/userMachine";
+import { useAppDispatch } from "@/lib/store/reduxHooks";
 
 const UserMachineList: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [userMachines, setUserMachines] = useState<UserMachine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

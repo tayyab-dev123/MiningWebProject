@@ -34,7 +34,7 @@ const HeroSection = () => {
               Your Gateway to Crypto Mining Success
             </h1>
             <p className="text-gray-300 ">
-              Whether you're a seasoned miner or a beginner venturing into crypto mining, 
+              Whether you&lsquo;re a seasoned miner or a beginner venturing into crypto mining, 
               we are your trusted partner. Based in Dubai, we cater to the needs of crypto 
               miners in the region and beyond. Our mission is to make cryptocurrency mining 
               accessible to all, including beginners looking to explore this exciting field.

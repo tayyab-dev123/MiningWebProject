@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export interface User {
-  _id?: string;  // Use _id instead of id for MongoDB
+  _id: string;  // Use _id instead of id for MongoDB
   id?: string;   // Allow both _id and id for flexibility
   firstName: string;
   email: string;

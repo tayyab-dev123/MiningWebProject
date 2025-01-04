@@ -1,3 +1,4 @@
+import AdminTransactionsPage from '@/components/AllProduct/AllTransaction'
 import AdminUsersPage from '@/components/AllProduct/AllUser'
 import AdminProductTable from '@/components/AllProduct/ProductTable'
 import DefaultLayout from '@/components/Layouts/DefaultLayout'
@@ -8,7 +9,7 @@ function page() {
   return (
     <div>
       <LandingLayout>
-        <AdminUsersPage/>
+        <AdminTransactionsPage/>
       </LandingLayout>
     </div>
   )

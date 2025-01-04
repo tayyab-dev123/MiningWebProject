@@ -48,7 +48,7 @@ const FAQSection = () => {
     }
   ];
 
-  const toggleQuestion = (index) => {
+  const toggleQuestion = (index:any) => {
     setOpenQuestion(openQuestion === index ? null : index);
   };
 

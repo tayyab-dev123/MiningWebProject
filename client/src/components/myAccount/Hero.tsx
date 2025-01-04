@@ -3,13 +3,13 @@ import React, { useEffect } from "react";
 import { FileText, Heart, User } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/lib/store/store";
+import { AppDispatch, RootState } from "@/lib/store/store";
 import { useRouter } from "next/navigation";
 import { fetchUserMachines } from "@/lib/feature/userMachine/usermachineApi";
 
 const DashboardHero = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { userMachines, isLoading } = useSelector(
     (state: RootState) => state.userMachine,
   );
@@ -40,11 +40,19 @@ const DashboardHero = () => {
       0,
     ) || 0;
 
-  const handleNavigation = (path) => {
+  const handleNavigation = (path:any) => {
     router.push(path);
   };
 
-  const DashboardCard = ({ icon: Icon, title, value, trend, path }) => (
+  interface DashboardCardProps {
+    icon: React.ElementType;
+    title: string;
+    value: string;
+    trend?: number;
+    path?: string;
+  }
+
+  const DashboardCard:React.FC<DashboardCardProps> = ({ icon: Icon, title, value, trend, path }) => (
     <div
       onClick={() => path && handleNavigation(path)}
       className="group relative cursor-pointer overflow-hidden rounded-2xl border border-zinc-800 bg-black p-6 transition-all duration-500 hover:border-[#21eb00] hover:shadow-lg hover:shadow-[#21eb00]/10"

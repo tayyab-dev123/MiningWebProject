@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
+import { useAppSelector } from "@/lib/store/reduxHooks";
 
 export const AdminNavbar = () => {
   const pathname = usePathname();
-  const { user, isAuthenticated } = useSelector(
+  const { user, isAuthenticated } = useAppSelector(
     (state: RootState) => state.auth,
   );
   const auth = useSelector((state: RootState) => state.auth);
@@ -43,7 +44,7 @@ export const AdminNavbar = () => {
         <nav className="mx-1  items-center justify-between rounded-2xl bg-gray-800 px-6 py-3 shadow-sm md:mx-11 md:flex">
           <div className="flex space-x-3 md:space-x-9">
             <Link
-              href="/ProductUpload"
+              href="/ProductTable"
               className="font-semibold text-[#21eb00] hover:underline"
             >
               All Product{" "}
@@ -55,7 +56,7 @@ export const AdminNavbar = () => {
               All User
             </Link>
             <Link
-              href="/ProductTable"
+              href="/ProductUpload"
               className="text-gray-300 hover:text-[#21eb00]"
             >
               Add Machine{" "}

@@ -15,10 +15,10 @@ const __filename = fileURLToPath(import.meta.url);
 
 
 export const registerUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password , country ,phoneNumber } = req.body;
 
   // Input validation
-  if (!firstName || !lastName || !email || !password) {
+  if (!firstName || !lastName || !email || !password || !country ||!phoneNumber) {
       return res.status(400).json({ message: "All fields are required" });
   }
   if (password.length < 6) {
@@ -33,7 +33,7 @@ export const registerUser = asyncHandler(async (req, res) => {
       }
 
       // Create user
-      const user = await User.create({ firstName, lastName, email, password });
+      const user = await User.create({ firstName, lastName, email, password ,country,phoneNumber });
  
       if (user) {
           // Generate token and set cookie
@@ -59,12 +59,18 @@ export const registerUser = asyncHandler(async (req, res) => {
               // You might want to log this to a monitoring service
           }
 
-          return res.status(201).json({
-              id: user._id,
+          res.status(200).json({
+            user: {
+              _id: user._id.toString(), // Ensure it's a string
               firstName: user.firstName,
               lastName: user.lastName,
               email: user.email,
-              token,
+              role: user.role,
+              country: user.country, 
+              phoneNumber:user.phoneNumber,
+
+            },
+            token: token // Include the token in the response
           });
       } else {
           return res.status(400).json({ message: "Invalid user data" });
@@ -112,6 +118,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     lastName: user.lastName,
     email: user.email,
     role: user.role, 
+    phoneNumber:user.phoneNumber
   });
 });
 
@@ -154,6 +161,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
       lastName: user.lastName,
       email: user.email,
       role:user.role,
+      country: user.country, // Include country in response
     });
   } catch (error) {
     console.error("Get current user error:", error);

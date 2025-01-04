@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import CountDownTimer from "@/components/CountDownTimer";
 import Link from "next/link";
 
 const UnderMaintenance: React.FC = () => {
@@ -41,7 +40,6 @@ const UnderMaintenance: React.FC = () => {
 
               {/* <!-- Countdown timer start --> */}
               <div className="mt-10">
-                <CountDownTimer />
               </div>
               {/* <!-- Countdown timer start --> */}
 

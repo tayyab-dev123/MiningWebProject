@@ -4,13 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { RootState } from "@/lib/store/store";
 import { logout, setUser } from "@/lib/feature/auth/authSlice";
-import { router } from "next/navigation";
 import { useGetCurrentUserQuery } from "@/lib/feature/auth/authThunk";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface NavLink {
   label: string;
   href: string;
+  onClick?: () => void;
+
 }
 
 const NavBar = () => {
@@ -18,10 +20,8 @@ const NavBar = () => {
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth,
   );
-  console.log(
-    "Auth State:",
-    useSelector((state: RootState) => state.auth),
-  );
+
+  const router = useRouter();
 
   const { isLoading } = useGetCurrentUserQuery();
   const dispatch = useDispatch();
@@ -62,10 +62,11 @@ const NavBar = () => {
           <div className="flex items-center justify-between py-7">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500">
-                <span className="text-xl font-bold">W</span>
+             
+              <span className="text-3xl font-bold">Miner</span>
+              <div className="flex -ml-2 h-8 w-7 items-center justify-center rounded-full bg-green-500">
+                <span className="text-xl font-bold">X</span>
               </div>
-              <span className="text-lg font-bold">wemine</span>
             </Link>
             <div className="relative">
               <div className="flex items-center space-x-6">
@@ -201,13 +202,6 @@ const NavBar = () => {
   );
 };
 
-const IconWithBadge = ({ Icon, count }) => (
-  <button className="relative">
-    <Icon className="h-6 w-6" />
-    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-500 text-xs">
-      {count}
-    </span>
-  </button>
-);
+
 
 export default NavBar;

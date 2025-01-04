@@ -7,23 +7,52 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import { useRouter } from "next/navigation";
+interface Machine {
+  _id: string;
+  machineName: string;
+  priceRange: number;
+  hashrate: number;
+  images?: string[];
+}
 
-const Shop = ({
+// Update the component props type
+interface ShopProps {
+  isHomePage?: boolean;
+  initialProductCount?: number;
+  whatsappNumber?: string;
+}
+
+// Product card props type
+interface ProductCardProps {
+  product: Machine;
+}
+
+// TopProductCard props type
+interface TopProductCardProps {
+  product: Machine;
+}
+
+
+const Shop: React.FC<ShopProps> = ({
   isHomePage = false,
   initialProductCount = 6,
   whatsappNumber = "+1234567890", // Add your WhatsApp number here
 }) => {
   const [sortOption, setSortOption] = useState("featured");
-  const { data: products, isLoading, isError } = useGetAllMiningMachinesQuery();
+  const { data: productsResponse, isLoading, isError } = useGetAllMiningMachinesQuery();
   const router = useRouter();
 
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth,
   );
+  interface ProductsResponse {
+    data: Machine[];
+  }
 
+  const products = productsResponse as unknown as ProductsResponse;
   const topProducts = products?.data?.slice(0, 3) || [];
 
-  const handleWhatsAppClick = (product) => {
+  const handleWhatsAppClick = (product:Machine) => {
     if (!isAuthenticated) {
       router.push("/auth/signin");
       return;
@@ -34,7 +63,7 @@ const Shop = ({
     window.open(whatsappUrl, "_blank");
   };
 
-  const TopProductCard = ({ product }) => {
+  const TopProductCard: React.FC<TopProductCardProps> = ({ product }) => {
     if (isHomePage) return null;
 
     return (
@@ -58,9 +87,8 @@ const Shop = ({
     );
   };
 
-  const ProductCard = ({ product }) => {
+  const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const [isHovered, setIsHovered] = useState(false);
-
     return (
       <div
         className="relative overflow-hidden rounded-lg bg-white"
@@ -178,23 +206,7 @@ const Shop = ({
           )}
 
           <div className="flex-1">
-            {/* {!isHomePage && (
-              <div className="mb-6 flex justify-end">
-                <div className="relative">
-                  <select
-                    value={sortOption}
-                    onChange={(e) => setSortOption(e.target.value)}
-                    className="appearance-none rounded-lg bg-gray-800 px-4 py-2 pr-8 text-white focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    <option value="featured">Featured</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="hashrate">Hashrate</option>
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
-                </div>
-              </div>
-            )} */}
+            
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {displayProducts.map((product, index) => (

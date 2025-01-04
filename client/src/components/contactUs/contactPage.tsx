@@ -5,8 +5,28 @@ import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import dynamic from 'next/dynamic';
 
+// Define the interface for location props
+interface Location {
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
+// Define the interface for map component props
+interface MapComponentProps {
+  location: Location;
+  isExpanded: boolean;
+}
+
 // Dynamic import of map components with no SSR
-const MapComponent = dynamic(() => import('./Map'), {
+const MapComponent = dynamic<MapComponentProps>(() => import('./Map'), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full flex items-center justify-center bg-gray-800">
@@ -18,7 +38,7 @@ const MapComponent = dynamic(() => import('./Map'), {
 const ContactPage = () => {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
 
-  const location = {
+  const location: Location = {
     address: {
       street: "123 Business Street",
       city: "New York",

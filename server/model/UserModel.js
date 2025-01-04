@@ -34,6 +34,17 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
     },
+    phoneNumber: {
+      type: String,
+      required: [true, "phoneNumber is required"],
+      trim: true,
+      minlength: [6, "phoneNumber must be at least 6 characters long"],
+    },
+    country: {
+      type: String,
+      required: [true, "Country is required"],
+      trim: true,
+    },
   },
   {
     timestamps: true,

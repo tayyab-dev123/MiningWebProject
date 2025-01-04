@@ -2,8 +2,14 @@
 import React, { useState } from 'react';
 import { Cloud, Thermometer, Cpu, FolderCog } from 'lucide-react';
 import { motion } from 'framer-motion';
+interface FeatureCardProps {
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  title: string;
+  description: string;
+  index: number;
+}
 
-const FeatureCard = ({ icon: Icon, title, description, index }) => {
+const FeatureCard:React.FC<FeatureCardProps> = ({ icon: Icon, title, description, index }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

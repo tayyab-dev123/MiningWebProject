@@ -146,7 +146,7 @@ export default function LoginPage() {
           <h2 className="text-2xl mb-16 mx-auto w-30">REGISTER</h2>
           <p className="text-gray-300 mb-3 text-sm">
             Registering for this site allows you to access your order status and history. Just fill
-            in the fields below, and we'll get a new account set up for you in no time. We will
+            in the fields below, and we&#39;ll get a new account set up for you in no time. We will
             only ask you for information necessary to make the purchase process faster and easier.
           </p>
           <Link href="/auth/signup">

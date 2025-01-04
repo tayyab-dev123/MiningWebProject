@@ -6,7 +6,12 @@ import { RootState } from '@/lib/store/store';
 import { UpdateProfitPayload,UserMachine, 
     UserMachineState, 
     AssignMachinePayload, 
-    ProfitUpdateStatus} from '@/types/userMachine';
+    ProfitUpdateStatus,
+    UserProfitSummary,
+    Transaction,
+    WithdrawalPayload,
+    TransactionResponse,
+    WithdrawalResponse} from '@/types/userMachine';
 
 // Async Thunks
 export const assignMachineToUser = createAsyncThunk<
@@ -114,13 +119,124 @@ export const fetchProfitUpdateStatus = createAsyncThunk<
 );
 
 
+
+
+
+export const fetchUserTotalProfit = createAsyncThunk<
+  UserProfitSummary,
+  string,
+  { state: RootState; rejectValue: string }
+>(
+  'userMachine/fetchTotalProfit',
+  async (userIdentifier, { rejectWithValue }) => {
+    try {
+      if (!userIdentifier || typeof userIdentifier !== 'string') {
+        return rejectWithValue('Invalid user identifier');
+      }
+
+      // URL encode the identifier in case it's an email address
+      const encodedIdentifier = encodeURIComponent(userIdentifier);
+      const response = await axios.get<UserProfitSummary>(
+        `/api/v1/total-profit/${encodedIdentifier}`
+      );
+      
+      // Validate response data
+      if (!response.data || typeof response.data.totalProfit === 'undefined') {
+        return rejectWithValue('Invalid response data');
+      }
+
+      return response.data;
+    } catch (error: any) {
+      console.error('Total profit fetch error:', error);
+      return rejectWithValue(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to fetch total profit'
+      );
+    }
+  }
+);
+
+
+
+
+// Admin Transactions Thunk
+export const fetchAdminTransactions = createAsyncThunk<
+  TransactionResponse,
+  { page?: number; limit?: number; sortBy?: string; order?: 'asc' | 'desc' },
+  { state: RootState; rejectValue: string }
+>(
+  'userMachine/fetchAdminTransactions',
+  async ({ page = 1, limit = 20, sortBy = 'transactionDate', order = 'desc' }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get<TransactionResponse>(
+        '/api/v1/admin/transactions',
+        { params: { page, limit, sortBy, order } }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch admin transactions');
+    }
+  }
+);
+
+// Process Withdrawal Thunk
+export const processWithdrawal = createAsyncThunk<
+  WithdrawalResponse,
+  WithdrawalPayload,
+  { state: RootState; rejectValue: string }
+>(
+  'userMachine/processWithdrawal',
+  async (withdrawalData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post<WithdrawalResponse>(
+        '/api/v1/withdrawal', 
+        withdrawalData
+      );
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to process withdrawal';
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+
+
+export const fetchUserTransactions = createAsyncThunk<
+  TransactionResponse,
+  { userIdentifier: string; page?: number; limit?: number },
+  { state: RootState; rejectValue: string }
+>(
+  'userMachine/fetchTransactions',
+  async ({ userIdentifier, page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get<TransactionResponse>(
+        `/api/v1/transactions/${userIdentifier}`,
+        { params: { page, limit } }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch transactions');
+    }
+  }
+);
+
 // Initial State
 const initialState: UserMachineState = {
   userMachines: [],
   allUserMachines: [],
+  transactionData: {
+    transactions: [],
+    totalPages: 1,
+    currentPage: 1,
+    totalTransactions: 0
+  },
+  userProfit: null,
   isLoading: false,
   error: null
 };
+
 
 // Slice
 const userMachineSlice = createSlice({
@@ -189,6 +305,60 @@ const userMachineSlice = createSlice({
       state.userMachines = state.userMachines.filter(
         (um) => um._id !== action.payload
       );
+    });
+    builder.addCase(processWithdrawal.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+ 
+    builder.addCase(processWithdrawal.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || 'Failed to process withdrawal';
+    });
+
+    // Fetch User Transactions
+    builder.addCase(fetchUserTransactions.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchUserTransactions.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.transactionData = action.payload;  // Assuming action.payload has the correct shape
+    });
+    builder.addCase(fetchUserTransactions.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || 'Failed to fetch transactions';
+    });
+
+    // Fetch User Total Profit
+    builder.addCase(fetchUserTotalProfit.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchUserTotalProfit.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.userProfit = action.payload;
+    });
+    builder.addCase(fetchUserTotalProfit.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || 'Failed to fetch total profit';
+    });
+    builder.addCase(fetchAdminTransactions.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchAdminTransactions.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.transactionData = {
+        transactions: action.payload.transactions,
+        totalPages: action.payload.totalPages,
+        currentPage: action.payload.currentPage,
+        totalTransactions: action.payload.totalTransactions
+      };
+    });
+    builder.addCase(fetchAdminTransactions.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || 'Failed to fetch admin transactions';
     });
   }
 });

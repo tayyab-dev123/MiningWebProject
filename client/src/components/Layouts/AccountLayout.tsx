@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Header from "@/components/Header";
 import AccountLayout from "../myAccount/layout";
 
 export default function DefaultLayout({
@@ -13,12 +12,13 @@ export default function DefaultLayout({
   return (
     <div className="">
       <div className="">
-        <AccountLayout />
-        <main>
-          <div className="mx-auto max-w-screen-2xl ">
-            {children}
-          </div>
-        </main>
+        <AccountLayout>
+          <main>
+            <div className="mx-auto max-w-screen-2xl ">
+              {children}
+            </div>
+          </main>
+        </AccountLayout>
       </div>
     </div>
   );

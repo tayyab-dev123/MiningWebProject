@@ -1,5 +1,5 @@
-import ProductUpload from '@/components/inventory/FileUpload'
 import LandingLayout from '@/components/Layouts/LandingLayout'
+import ProductUpload from '@/components/ProductUpload/ProductUpload'
 import React from 'react'
 
 function page() {
