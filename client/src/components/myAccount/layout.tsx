@@ -46,7 +46,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       <a
         href={link}
         onClick={handleClick}
-        className={`group relative flex items-center space-x-3 rounded-xl px-4 py-3 transition-all duration-300 hover:bg-zinc-900
+        className={`group relative flex items-center space-x-3 rounded-xl transition-all duration-300 hover:bg-zinc-900
           ${location.pathname === link ? "bg-gradient-to-r from-[#21eb00]/10 to-transparent text-[#21eb00]" : "text-zinc-400 hover:text-white"}`}
       >
         <div className="flex items-center space-x-3">
@@ -94,7 +94,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       <div
         className={`${
           isMobileMenuOpen ? "block" : "hidden"
-        } fixed inset-0 z-50 w-full transform bg-black transition-all duration-300 lg:static lg:block lg:w-72`}
+        } fixed inset-0 z-50 w-full transform bg-black transition-all duration-300 lg:static lg:block lg:w-56`}
       >
         <div className="flex h-full flex-col border-r border-zinc-800 bg-black/95 p-6 backdrop-blur-md">
           <div className="flex items-center justify-between lg:mb-8">
@@ -108,13 +108,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               <X className="h-6 w-6" />
             </button>
           </div>
-          <nav className="space-y-2">
+          <nav className="space-y-10">
             <MenuLink
               link="/profile/assignProfile"
               icon={Settings}
               label="Total Machine"
             />
-            <MenuLink link="/profile/withdraw" icon={User} label="Profile" />
+            <MenuLink link="/profile/withdraw" icon={User} label="Withdraw" />
             <MenuLink link="#" icon={LogOut} label="Logout" />
           </nav>
         </div>
@@ -147,8 +147,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 bg-black px-4 py-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">{children}</div>
+      <div className="flex-1 bg-black">
+        <div className="mx-auto max-w-full">{children}</div>
       </div>
     </div>
   );

@@ -8,6 +8,9 @@ import {
   Loader2,
   Search,
   AlertCircle,
+  ArrowUpRight,
+  ArrowDownRight,
+  History
 } from "lucide-react";
 import {
   Card,
@@ -107,13 +110,13 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ userEmail }) =>
   const getStatusColor = (status: string | undefined): string => {
     switch (status?.toLowerCase()) {
       case "completed":
-        return "bg-emerald-500/10 text-emerald-500";
+        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
       case "pending":
-        return "bg-yellow-500/10 text-yellow-500";
+        return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
       case "failed":
-        return "bg-red-500/10 text-red-500";
+        return "bg-red-500/10 text-red-400 border-red-500/20";
       default:
-        return "bg-zinc-500/10 text-zinc-500";
+        return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
     }
   };
 
@@ -143,51 +146,45 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ userEmail }) =>
       <Alert className="border-yellow-500/20 bg-yellow-500/10">
         <AlertCircle className="h-4 w-4 text-yellow-500" />
         <AlertDescription className="text-yellow-500">
-          No user email provided. Please log in to view transactions.
         </AlertDescription>
       </Alert>
     );
   }
 
   return (
-    <Card className="border-zinc-800/50 bg-zinc-900/50">
+    <Card className="border-zinc-800 bg-black/50 backdrop-blur-sm shadow-lg">
       <CardHeader className="pb-4">
         <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div>
-            <CardTitle className="text-xl font-semibold">
-              Transaction History
-            </CardTitle>
-            <p className="mt-1 text-sm text-zinc-400">
-              Manage and monitor your transaction history
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-emerald-500/10">
+              <History className="h-6 w-6 text-emerald-400" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold text-white">
+                Transaction History
+              </CardTitle>
+              <p className="mt-1 text-sm text-zinc-400">
+                Track your financial activities and monitor transactions
+              </p>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             <div className="relative flex-1 md:flex-none">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500" />
               <Input
                 placeholder="Search transactions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 w-full md:w-60 border-zinc-700/50 bg-zinc-800/50"
+                className="pl-9 w-full md:w-64 bg-zinc-900 border-zinc-800 focus:border-emerald-500 focus:ring-emerald-500 placeholder-zinc-500"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-40 border-zinc-700/50 bg-zinc-800/50">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
+         
           </div>
         </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex h-60 items-center justify-center">
+          <div className="flex h-64 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
           </div>
         ) : error ? (
@@ -198,43 +195,49 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ userEmail }) =>
             </AlertDescription>
           </Alert>
         ) : transactions.length === 0 ? (
-          <div className="flex h-60 flex-col items-center justify-center text-zinc-400">
-            <Clock className="mb-2 h-8 w-8" />
-            <p>No transactions found</p>
+          <div className="flex h-64 flex-col items-center justify-center text-zinc-400">
+            <div className="p-4 rounded-full bg-zinc-800/50 mb-4">
+              <Clock className="h-8 w-8" />
+            </div>
+            <p className="text-lg font-medium">No transactions found</p>
+            <p className="text-sm text-zinc-500 mt-1">Your transaction history will appear here</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="rounded-lg border border-zinc-800">
+          <div className="space-y-3">
+            <div className="rounded-xl border border-zinc-800 overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="border-zinc-800 hover:bg-zinc-800/50">
-                    <TableHead className="text-zinc-400">ID</TableHead>
-                    <TableHead className="text-zinc-400">Date</TableHead>
-                    <TableHead className="text-zinc-400">Type</TableHead>
-                    <TableHead className="text-right text-zinc-400">Amount</TableHead>
-                    <TableHead className="text-zinc-400">Status</TableHead>
+                    <TableHead className="text-zinc-400 font-medium">Date</TableHead>
+                    <TableHead className="text-zinc-400 font-medium">Type</TableHead>
+                    <TableHead className="text-right text-zinc-400 font-medium">Amount</TableHead>
+                    <TableHead className="text-zinc-400 font-medium">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {transactions.map((transaction) => (
                     <TableRow
                       key={transaction._id}
-                      className="border-zinc-800 hover:bg-zinc-800/50"
+                      className="border-zinc-800 hover:bg-zinc-800/50 transition-colors duration-200"
                     >
-                      <TableCell className="font-medium">
-                        {transaction._id}
-                      </TableCell>
-                      <TableCell className="text-zinc-400">
+                      <TableCell className="text-zinc-400 font-medium">
                         {formatDate(transaction.transactionDate)}
                       </TableCell>
                       <TableCell>
-                        <span className="capitalize">{transaction.type}</span>
+                        <div className="flex items-center gap-2">
+                         
+                          <span className="capitalize font-medium text-emerald-100">
+                            {transaction.type}
+                            <ArrowDownRight className="h-4 w-4 text-emerald-400" />
+
+                          </span>
+                        </div>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right font-bold">
                         <span
                           className={
                             transaction.type === "withdrawal"
-                              ? "text-red-400"
+                              ? "text-[#21df03]"
                               : "text-emerald-400"
                           }
                         >
@@ -246,10 +249,9 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ userEmail }) =>
                         <Badge
                           className={`${getStatusColor(
                             transaction.status
-                          )} capitalize`}
+                          )} capitalize border px-3 py-1`}
                         >
-                          {transaction.status}
-                        </Badge>
+successful                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -257,19 +259,19 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ userEmail }) =>
               </Table>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-2">
               <p className="text-sm text-zinc-400">
                 Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, totalTransactions)} to{" "}
                 {Math.min(currentPage * ITEMS_PER_PAGE, totalTransactions)} of{" "}
                 {totalTransactions} transactions
               </p>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="icon"
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((prev) => prev - 1)}
-                  className="border-zinc-700/50 bg-zinc-800/50"
+                  className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 hover:text-emerald-400 transition-colors duration-200"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -278,7 +280,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ userEmail }) =>
                   size="icon"
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((prev) => prev + 1)}
-                  className="border-zinc-700/50 bg-zinc-800/50"
+                  className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 hover:text-emerald-400 transition-colors duration-200"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>

@@ -64,6 +64,9 @@ export const AdminNavbar = () => {
             <Link href="/Assign" className="text-gray-300 hover:text-[#21eb00]">
               Sign Machine{" "}
             </Link>
+            <Link href="/AllTransaction" className="text-gray-300 hover:text-[#21eb00]">
+              All Transaction{" "}
+            </Link>
           </div>
           <button
             onClick={() => console.log("Logout clicked")}

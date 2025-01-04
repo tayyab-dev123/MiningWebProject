@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Monitor,
-
   AlertCircle,
   TrendingUp,
-  Activity,
   Coins,
+  Loader2,
   ArrowUpRight,
-  Loader2
+  Wallet
 } from "lucide-react";
 import { fetchUserTotalProfit } from "@/lib/feature/userMachine/usermachineApi";
 import { AppDispatch, RootState } from "@/lib/store/store";
@@ -16,13 +14,15 @@ import WithdrawalDialog from "./withdrawForm";
 import TransactionHistory from "./TransactionHistory";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UserProfitSummary } from "@/types/userMachine";
+
 interface StatsOverviewProps {
   profitData: UserProfitSummary;
+  onWithdrawClick: () => void;
 }
 
 const WithdrawalDashboard = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { userMachines, isLoading } = useSelector(
+  const { isLoading } = useSelector(
     (state: RootState) => state.userMachine
   );
   const { user, isAuthenticated } = useSelector(
@@ -33,10 +33,11 @@ const WithdrawalDashboard = () => {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-    let retryTimeout: string | number | NodeJS.Timeout | undefined;
+    let retryTimeout: NodeJS.Timeout | undefined;
 
     const fetchData = async () => {
       if (!user?.email || !isAuthenticated) {
@@ -50,9 +51,7 @@ const WithdrawalDashboard = () => {
           setProfitLoading(true);
         }
 
-        const profitResult = await dispatch(
-          fetchUserTotalProfit(user.email)
-        ).unwrap();
+        const profitResult = await dispatch(fetchUserTotalProfit(user.email)).unwrap();
 
         if (isMounted && profitResult) {
           setTotalProfitData(profitResult);
@@ -60,7 +59,6 @@ const WithdrawalDashboard = () => {
           setRetryCount(0);
         }
       } catch (err) {
-        console.error("Error fetching data:", err);
         if (isMounted) {
           setError(err instanceof Error ? err.message : "Failed to fetch data");
           if (isInitialLoad && retryCount < 3) {
@@ -89,7 +87,34 @@ const WithdrawalDashboard = () => {
     };
   }, [dispatch, user?.email, isAuthenticated, retryCount]);
 
-  // If not authenticated, show authentication required message
+  const StatsOverview: React.FC<StatsOverviewProps> = ({ profitData, onWithdrawClick }) => (
+    <div className="space-y-6">
+      <div className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-black p-8 transition-all duration-300 hover:border-[#21eb00]/50">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#21eb00]/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="relative">
+          <div className="flex items-center space-x-3">
+            <div className="rounded-lg bg-[#21eb00]/10 p-3">
+              <Coins className="h-8 w-8 text-[#21eb00]" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-zinc-200">Total Profit</h3>
+              <p className="text-sm text-zinc-400">Available for Withdrawal</p>
+            </div>
+          </div>
+          <p className="mt-6 text-5xl font-bold tracking-tight text-white">
+            ${profitData?.totalProfit?.toFixed(0) || "0.00"}
+          </p>
+          <div className="mt-4 flex items-center space-x-2 text-sm">
+            <TrendingUp className="h-4 w-4 text-[#21eb00]" />
+            <span className="text-zinc-400">Accumulated Earnings</span>
+          </div>
+        </div>
+      </div>
+
+   
+    </div>
+  );
+
   if (!isAuthenticated) {
     return (
       <Alert className="border-yellow-500/20 bg-yellow-500/10">
@@ -101,114 +126,50 @@ const WithdrawalDashboard = () => {
     );
   }
 
-  // If authenticated but no user data yet, show loading
   if (!user) {
     return (
       <div className="flex h-60 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#21eb00]" />
       </div>
     );
   }
 
-  const StatsOverview:React.FC<StatsOverviewProps> = ({ profitData }) => (
-    <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Monitor className="h-5 w-5 text-[#21eb00]" />
-            <h3 className="text-sm font-medium text-zinc-400">Total Machines</h3>
-          </div>
-        </div>
-        <p className="mt-4 text-3xl font-semibold">
-          {profitData?.totalMachines || 0}
-        </p>
-      </div>
-
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Coins className="h-5 w-5 text-[#21eb00]" />
-            <h3 className="text-sm font-medium text-zinc-400">Total Profit</h3>
-          </div>
-        </div>
-        <p className="mt-4 text-3xl font-semibold">
-          ${profitData?.totalProfit?.toFixed(2) || "0.00"}
-        </p>
-      </div>
-
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-[#21eb00]" />
-            <h3 className="text-sm font-medium text-zinc-400">
-              Average per Machine
-            </h3>
-          </div>
-        </div>
-        <p className="mt-4 text-3xl font-semibold">
-          ${profitData?.totalMachines
-            ? (profitData.totalProfit / profitData.totalMachines).toFixed(2)
-            : "0.00"}
-        </p>
-      </div>
-
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Activity className="h-5 w-5 text-[#21eb00]" />
-            <h3 className="text-sm font-medium text-zinc-400">Active Rate</h3>
-          </div>
-        </div>
-        <p className="mt-4 text-3xl font-semibold">
-          {profitData?.totalMachines
-            ? `${((userMachines?.filter((m: { status: string; }) => m.status === "active").length /
-                profitData.totalMachines) *
-                100).toFixed(0)}%`
-            : "0%"}
-        </p>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="mb-2 text-2xl font-semibold lg:text-3xl">
-              Mining Dashboard
-            </h2>
-            <p className="text-sm leading-relaxed text-zinc-400 lg:text-base">
-              Monitor your mining machines performance and profit accumulation in
-              real-time.
-            </p>
-          </div>
-          {isAuthenticated && totalProfitData && (
-            <WithdrawalDialog
-              availableBalance={totalProfitData.totalProfit}
-              userEmail={user.email}
-            />
-          )}
-        </div>
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h2 className="text-3xl font-bold text-white">Mining Dashboard</h2>
+        <p className="text-base text-zinc-400">
+          Monitor your mining machines performance and profit accumulation in real-time.
+        </p>
       </div>
 
       {profitLoading ? (
         <div className="flex h-60 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#21eb00]" />
         </div>
       ) : (
         <>
-          {totalProfitData && <StatsOverview profitData={totalProfitData} />}
-          
-          {/* Only render TransactionHistory if we have user email */}
+          {totalProfitData && (
+            <>
+              <StatsOverview
+                profitData={totalProfitData}
+                onWithdrawClick={() => setIsWithdrawDialogOpen(true)}
+              />
+              {isAuthenticated && (
+                <WithdrawalDialog
+                  availableBalance={totalProfitData.totalProfit}
+                  userEmail={user.email}
+                />
+              )}
+            </>
+          )}
+
           {user?.email && <TransactionHistory userEmail={user.email} />}
 
           {error && (
             <Alert className="border-red-500/20 bg-red-500/10">
               <AlertCircle className="h-4 w-4 text-red-400" />
-              <AlertDescription className="text-red-400">
-                {error}
-              </AlertDescription>
+              <AlertDescription className="text-red-400">{error}</AlertDescription>
             </Alert>
           )}
         </>
